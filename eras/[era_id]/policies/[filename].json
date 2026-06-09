@@ -1,0 +1,18 @@
+{
+  "policy_id": "886_vtaiwan_2015",
+  "title": "vTaiwan（デジタル市民対話プラットフォーム）の法整備",
+  "status": "implemented",
+  "facts": {
+    "execution_year": 2015,
+    "primary_source_url": "[https://vtaiwan.tw/about](https://vtaiwan.tw/about)",
+    "budget_allocated_usd": 0,
+    "tags": ["Digital Democracy", "Civic Tech", "Consensus Building"]
+  },
+  "impact_logs": [
+    {
+      "metric": "Uber進出に伴う法改正の合意形成期間",
+      "before": "不透明・長期化",
+      "after": "4週間でステークホルダー間の合意形成を完了"
+    }
+  ]
+}
