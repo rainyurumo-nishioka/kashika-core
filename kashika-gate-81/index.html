@@ -246,6 +246,7 @@
     <div class="grid-bg"></div>
 
     <div class="app-container">
+        <!-- サイドバー：地層選択 -->
         <div class="sidebar">
             <div class="logo-area">
                 <h1>KASHIKA // 81</h1>
@@ -264,6 +265,7 @@
             </div>
         </div>
 
+        <!-- メインコンテンツ領域 -->
         <div class="main-content">
             <div class="header-status">
                 <div>
@@ -274,6 +276,7 @@
             </div>
 
             <div class="dashboard-grid">
+                <!-- 左側：政策詳細と成分分析 -->
                 <div class="data-panel" id="policy-panel">
                     <h2 id="policy-title" style="color: var(--accent-modern);">デジタル公的個人認証口座紐付け案</h2>
                     <p id="policy-summary" style="margin-top: 10px; font-size: 14px; line-height: 1.6;">
@@ -291,6 +294,7 @@
                     </div>
                 </div>
 
+                <!-- 右側：人と団体の実績（年輪） -->
                 <div class="data-panel" style="display: flex; flex-direction: column; gap: 20px;">
                     <div>
                         <h3 style="font-size: 14px; margin-bottom: 15px;">担当査読団体の実績（SBT）</h3>
@@ -312,6 +316,7 @@
         </div>
     </div>
 
+    <!-- インタラクション制御スクリプト -->
     <script>
         const data = {
             modern: {
@@ -338,7 +343,9 @@
 
         function switchEra(eraKey, element) {
             // アクティブなクラスの付け替え
-            document.querySelectorAll('.era-card').forEach(card => card.classList.remove('active'));
+            document.querySelectorAll('.era-card').forEach(card => {
+                card.classList.remove('active');
+            });
             element.classList.add('active');
 
             const eraData = data[eraKey];
