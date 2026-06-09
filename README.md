@@ -1,3 +1,67 @@
+ご提示いただいたシビックテック・プロジェクト「KASHIKA」のドキュメントを、オープンソースの思想やテックカルチャー（GitHubやWeb3の文脈）に馴染む自然でプロフェッショナルな英語に翻訳しました。
+
+KASHIKA - Global Open Policy Ledger
+KASHIKA is an autonomous, decentralized civic-tech platform designed to refactor politics and social infrastructure based on "data (facts)" rather than emotion. By leveraging the technology and labor of citizens, we aim to update outdated state systems and opaque processes into structured data (JSON), semi-permanently sustaining a "cycle of trust" across the globe.
+
+🏛 Core Principles (Project Constitution)
+Facts Only
+We never handle political bias, emotional criticism, or scandals. The platform's foundation consists solely of structured data rooted in verifiable records (logs).
+
+Identity & Accountability (Visualizing Responsibility & Contribution)
+We clarify exactly "who converted which primary source into data." Verified individuals or organizations are automatically awarded SBTs (Soulbound Tokens) by the system based on their track record, which serve as trust coefficients for governance.
+
+Decentralized Multi-National Hub
+Information is created where it belongs (the local country folder) by the local experts who know it best. Rather than copying and siloing other countries' data, nations use a common language (English) to reference it via pointers, synchronizing global knowledge by "donating" translated data back to the original repository.
+
+🌐 Global-Localization Rules
+Local Folder Rules: When writing out your own country's policy data, you must include the global lingua franca text ("English") in addition to the "Local Language."
+
+Translation Rules for External (Global) Use Cases:
+If contributors in Japan wish to reference and translate a pioneering case from overseas (e.g., the India folder 91/), do not create a copy in the Japan folder. Instead, submit a pull request (donation) containing the translation file formatted as _ja.json directly within the relevant folder of that overseas repository.
+
+🏛 The Two Iron Rules for Handling Imperial Era & Former Overseas Territory Data (1895–1945)
+The historical facts show that legislation and infrastructure investments in Manchuria, Taiwan, the Korean Peninsula, and Southeast Asia (during the Southern Military Administration period) under the Empire of Japan served as "prototypes (testing grounds)" for post-war Japanese bureaucratic institutions and social systems. Therefore, they fall within the tracking scope of this project.
+
+However, because this is an extremely sensitive historical and political domain, you must strictly adhere to the following two iron rules to prevent unnecessary friction with the data grid of the international community.
+
+① Commit to "Design Specifications (Facts)" and Eliminate Adjectives
+Political right or wrong and subjective evaluations (e.g., "significantly contributed to modernization and development" or "unjustly plundered local resources through oppressive military rule") belong to the realm of human emotion and interpretation. This platform does not handle them at all. Describe only the data structures that exist within the records (logs).
+
+❌ NG (Mixing in adjectives/subjectivity):
+"Japan greatly contributed to the modernization and development of local infrastructure."
+"The oppressive military government wrongfully stripped the local population of their resources."
+
+⭕ OK (Pure Fact Logs):
+"In 1938, a funds transfer of XX yen from the Ministry of Finance to the Government of Manchukuo occurred. (Source: Ministry of Finance, Shōwa Fiscal History)"
+"Execution log for the modernization (structured data conversion) of land rights relationships based on Government-General of Taiwan Ordinance No. XX."
+
+② Design with Cross-Referencing (Pointer Coupling) to Other Country Gates as a Prerequisite
+Data stored in the Japan folder (81/) is strictly "design data extracted from Japanese official documents and budgets."
+
+In the future, when independent gates (repositories) for Taiwan (886/) or other countries/regions are launched and they accumulate data based on "local perspectives and primary sources," the frontend interface will seamlessly snap both datasets together into a single timeline via mutual pointer references to visualize them.
+
+Do not attempt to make history self-contained within your own country's data. Design your JSON as an "open grid" that can interface with external repositories.
+
+📂 Directory Structure
+The repository directories are separated by international calling codes (country codes). This ensures the independence of each country and avoids merge conflicts.
+
+Plaintext
+kashika-core/
+├── schema.json                 # Global data definition file
+├── README.md                   # This document
+├── 1/                          # North America (US, Canada, etc.)
+├── 81/                         # Japan
+│   ├── config.json             # Japan local settings / Organization index
+│   └── policies/               # Policy and bill folder (Japanese + English required)
+│       └── 81_digital_infra.json
+├── 886/                        # Taiwan
+└── 91/                         # India
+    └── policies/
+        ├── 91_aadhaar.json     # Source file (Hindi/English)
+        └── 91_aadhaar_ja.json  # Japanese translation "donated" by a Japanese contributor
+
+
+
 # KASHIKA (可視化) - Global Open Policy Ledger
 
 KASHIKAは、感情ではなく「データ（事実）」で政治と社会インフラをリファクタリングするための、自律分散型のシビックテック・プラットフォームです。国が作った古いシステムや不透明なプロセスを、市民の側の技術と労働力によって構造化データ（JSON）へとアップデートし、世界中で「信頼の循環」を半永続化させることを目指します。
