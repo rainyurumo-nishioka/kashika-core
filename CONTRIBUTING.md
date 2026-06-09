@@ -1,32 +1,31 @@
-# KASHIKA Global Expansion: Decentralized Contribution Guide
+Choose Your Role: The 3 Parallel Autonomous Roles
+KASHIKA has no hierarchy. There are no "senior administrators" or "junior users." You choose your role based on your specialized skill set, and earn immutable reputation directly in the data logs.
 
-Welcome to KASHIKA. This is not a centralized platform; it is a decentralized, flat matrix of historical and political facts. 
+      [ 🧠 ARCHITECT ] -------- (Connects gates & sets data assertions)
+             |
+             v
+[ 📝 SCRIBE ] <=======> [ 🔍 AUDITOR ]
+(Writes 1st-source JSON)  (Verifies "Facts Only" & signs SBT)
+📝 SCRIBE (記述特化)
+Role: Extract data from your nation's archives, official gazettes, or historical records, and translate them into clean, un-adjectived JSON files (like the vTaiwan example above).
 
-We do not judge, interpret, or ranks countries. We connect fact-led data structures. By opening your country's gate, your historical precedents will automatically backup (or conflict-warn) other nations' future policies.
+Reputation: Your handle is permanently stamped under the "contributors" array inside the policy ledger. You become the eternal scribe of that historical fact.
 
----
+🔍 AUDITOR (査読特化)
+Role: Review pull requests from Scribes. Ensure the data meets the strict "Facts Only" rule (Zero emotional adjectives, verified primary source URL required).
 
-## 🌍 How to Open Your Country's Gate (3-Min Starter Kit)
+Reputation: Authorized to sign and issue digital Soulbound Tokens (SBTs) as the "Guardian of Truth" for your gate, showing how many cross-border datasets you have verified.
 
-To join the KASHIKA global registry, fork this repository or create your own standalone repository named `kashika-gate-[Your-Country-Code]` (e.g., Taiwan = `kashika-gate-886`). 
+🧠 ARCHITECT (接続特化)
+Role: Connect different gates. When kashika-gate-81 (Japan) plans a new policy, the Architect writes a pointer inside kashika-core to bridge it with kashika-gate-886 (Taiwan) for cross-referencing.
 
-You only need **two minimum JSON files** to start running.
+Reputation: Your mapping configurations shape the global data grid, earning you global recognition as a core protocol contributor.
 
-### ① `/index.json` (The Gate Registry)
-Place this at the root of your repository so the global registry (`kashika-core`) can discover your eras and available data tracks.
+⚡ The Principle: "Past Precedents Support Future Policies"
+When data structures are linked horizontally:
 
-```json
-{
-  "gate_code": "886",
-  "country_name": "Taiwan",
-  "maintainers": ["taiwan-digital-civics"],
-  "eras": [
-    {
-      "era_id": "1996_digital_democracy",
-      "era_name": "デジタル民主主義移行期",
-      "policies_list": [
-        "eras/1996_digital_democracy/policies/886_g0v_vtaiwan.json"
-      ]
-    }
-  ]
-}
+No more political arguments: We do not say "This policy is good" or "This policy is bad."
+
+Structural Backup: If Japan proposes a digital voting bill in 2026, the UI automatically fetches Taiwan's 2015 vTaiwan logs and Estonia's 2005 i-Voting logs. The data itself argues the case.
+
+To list your gate on the world registry, submit a Pull Request adding your gate_code and repository_url to kashika-core/registry.schema.json. Let's map out reality.
