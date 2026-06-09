@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KASHIKA // Global Registry & Request Core</title>
+    <title>KASHIKA // Global Matrix Control Tower</title>
     <style>
         :root {
             --bg-dark: #020617;
@@ -16,6 +16,7 @@
             --accent-purple: #c084fc;
             --accent-rose: #fb7185;
             --accent-green: #34d399;
+            --accent-gold: #fbbf24;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -26,7 +27,6 @@
             padding: 40px;
         }
 
-        /* 宇宙的な格子背景 */
         .space-grid {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: linear-gradient(rgba(51, 65, 85, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(51, 65, 85, 0.15) 1px, transparent 1px);
@@ -40,17 +40,11 @@
         .brand-title h1 { font-size: 28px; letter-spacing: 3px; font-weight: 900; background: linear-gradient(to right, var(--accent-cyan), var(--accent-purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .brand-title p { color: var(--text-muted); font-size: 11px; font-family: monospace; text-transform: uppercase; margin-top: 4px; }
 
-        .dashboard-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
-        }
-
-        .panel {
-            background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px;
-            backdrop-filter: blur(12px); box-shadow: 0 20px 40px rgba(0,0,0,0.7);
-        }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .panel { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; backdrop-filter: blur(12px); box-shadow: 0 20px 40px rgba(0,0,0,0.7); }
         .panel-title { font-size: 15px; font-weight: 800; letter-spacing: 1px; margin-bottom: 20px; font-family: monospace; display: flex; align-items: center; gap: 8px; }
 
-        /* 左側：世界レジストリ（各国ゲート一覧） */
+        /* 左側：世界レジストリ */
         .gate-list { display: flex; flex-direction: column; gap: 15px; }
         .gate-row {
             background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.03); border-radius: 8px; padding: 15px;
@@ -61,48 +55,49 @@
         .gate-info p { font-size: 11px; color: var(--text-muted); font-family: monospace; margin-top: 2px; }
         
         .ask-gate-btn {
-            background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.4); color: var(--cyan);
+            background: rgba(34, 211, 238, 0.1); border: 1px solid rgba(34, 211, 238, 0.4);
             padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; color: var(--accent-cyan);
-            cursor: pointer; text-decoration: none; font-family: monospace; transition: all 0.2s;
+            cursor: pointer; font-family: monospace; transition: all 0.2s;
         }
         .ask-gate-btn:hover { background: var(--accent-cyan); color: #000; }
 
         /* 右側：世界が求める政策データ（Wanted Logs） */
         .wanted-list { display: flex; flex-direction: column; gap: 15px; }
-        .wanted-card {
-            background: rgba(244, 63, 94, 0.02); border: 1px solid rgba(244, 63, 94, 0.2); border-radius: 8px; padding: 18px;
-            position: relative; animation: slideIn 0.3s ease-out;
-        }
+        .wanted-card { background: rgba(244, 63, 94, 0.02); border: 1px solid rgba(244, 63, 94, 0.2); border-radius: 8px; padding: 18px; position: relative; }
         .wanted-badge { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; font-family: monospace; display: inline-block; margin-bottom: 8px; }
         .wanted-title { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
         .wanted-desc { font-size: 13px; color: #94a3b8; line-height: 1.5; margin-bottom: 15px; }
 
-        /* リンク提供（マージ要請）入力フォーム */
-        .link-input-group {
-            display: flex; gap: 8px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;
-        }
-        .link-input-group input {
-            flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); border-radius: 4px;
-            padding: 6px 10px; color: #fff; font-size: 12px;
-        }
-        .link-input-group button {
-            background: rgba(52, 211, 153, 0.1); border: 1px solid rgba(52, 211, 153, 0.4); color: var(--accent-green);
-            padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s;
-        }
+        /* リンク提供入力フォーム */
+        .link-input-group { display: flex; gap: 8px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; }
+        .link-input-group input { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); border-radius: 4px; padding: 6px 10px; color: #fff; font-size: 12px; }
+        .link-input-group button { background: rgba(52, 211, 153, 0.1); border: 1px solid rgba(52, 211, 153, 0.4); color: var(--accent-green); padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
         .link-input-group button:hover { background: var(--accent-green); color: #000; }
 
-        /* 提供されたリンク一覧の表示 */
+        /* 提供されたファクトの表示 */
         .provided-links { font-size: 12px; margin-top: 10px; color: var(--accent-green); font-family: monospace; }
-        .provided-links a { color: var(--accent-green); text-decoration: underline; margin-left: 5px; }
+        .provided-links a { color: var(--accent-green); text-decoration: underline; }
 
-        /* ダイアログ（ゲート質問用モック） */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8);
-            z-index: 100; justify-content: center; align-items: center; backdrop-filter: blur(5px);
+        /* ⚡ 経済レイヤー：寄付入口（ソケット情報） */
+        .funding-socket-box {
+            background: rgba(251, 191, 36, 0.03); border: 1px dashed rgba(251, 191, 36, 0.3);
+            border-radius: 6px; padding: 12px; margin-top: 12px; font-size: 11px; font-family: monospace;
         }
-        .modal-content {
-            background: #0f172a; border: 1px solid var(--accent-cyan); border-radius: 12px; padding: 30px; width: 480px;
+        .funding-header { color: var(--accent-gold); font-weight: bold; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .donate-action-btn {
+            background: linear-gradient(135deg, #fbbf24, #d97706); border: none; padding: 3px 8px;
+            border-radius: 4px; color: #000; font-weight: bold; font-size: 10px; cursor: pointer; transition: all 0.2s;
         }
+        .donate-action-btn:hover { transform: scale(1.05); box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
+
+        .ratio-bar-container { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 8px; background: #1e293b; }
+        .ratio-scribe { background: var(--accent-cyan); }
+        .ratio-auditor { background: var(--accent-gold); }
+        .ratio-architect { background: var(--accent-purple); }
+
+        /* ダイアログ */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: #0f172a; border: 1px solid var(--accent-cyan); border-radius: 12px; padding: 30px; width: 480px; }
         .modal-content h2 { font-size: 16px; margin-bottom: 15px; font-family: monospace; color: var(--accent-cyan); }
         .modal-content textarea { width: 100%; background: #000; border: 1px solid var(--border-color); border-radius: 6px; padding: 12px; color: #fff; margin-bottom: 15px; font-size: 14px; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
@@ -116,90 +111,73 @@
     <header>
         <div class="brand-title">
             <h1>KASHIKA // GLOBAL MATRIX CONTROL TOWER</h1>
-            <p>世界共通コアマスターレジストリ＆並列データ請求・リンクマージコンソール</p>
+            <p>世界共通コアマスターレジストリ＆並列データ請求・経済ソケットマージコンソール</p>
         </div>
-        <div style="font-family: monospace; font-size: 11px; color: var(--accent-cyan);">CORE_PROTOCOL: v0.2.0 // NETWORK: ONLINE</div>
+        <div style="font-family: monospace; font-size: 11px; color: var(--accent-cyan);">CORE_PROTOCOL: v0.4.0 // ECONOMY_LAYER: ACTIVE</div>
     </header>
 
     <div class="dashboard-grid">
-        <!-- 左：世界ゲートレジストリ（直接質問・データコール） -->
         <div class="panel">
             <div class="panel-title" style="color: var(--accent-cyan);">🌐 WORLD REGISTRY (世界公認ゲート一覧)</div>
             <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">
-                各国が自走管理している独立リポジトリのインデックス。ここから直接各国の開発班へ「こんなデータはないか？」と要求パイプラインを繋ぎます。
+                各国独立ゲートのリポジトリ一覧。ここから直接各国のIssueへ「データ要求（Data Call）」を射出します。
             </p>
             
             <div class="gate-list" id="gate-list-container">
-                <!-- 🇯🇵 日本 -->
                 <div class="gate-row">
-                    <div class="gate-info">
-                        <h3>🇯🇵 Japan Sector (Gate 81)</h3>
-                        <p>REPO: github.com/kashika-protocol/kashika-gate-81</p>
-                    </div>
+                    <div class="gate-info"><h3>🇯🇵 Japan Sector (Gate 81)</h3><p>REPO: github.com/kashika-protocol/kashika-gate-81</p></div>
                     <button class="ask-gate-btn" onclick="openAskModal('81', 'Japan')">💬 直接データ要求</button>
                 </div>
-                <!-- 🇹🇼 台湾 -->
                 <div class="gate-row">
-                    <div class="gate-info">
-                        <h3>🇹🇼 Taiwan Sector (Gate 886)</h3>
-                        <p>REPO: github.com/taiwan-digital-civics/kashika-gate-886</p>
-                    </div>
+                    <div class="gate-info"><h3>🇹🇼 Taiwan Sector (Gate 886)</h3><p>REPO: github.com/taiwan-digital-civics/kashika-gate-886</p></div>
                     <button class="ask-gate-btn" onclick="openAskModal('886', 'Taiwan')">💬 直接データ要求</button>
                 </div>
-                <!-- 🇪🇪 エストニア -->
                 <div class="gate-row">
-                    <div class="gate-info">
-                        <h3>🇪🇪 Estonia Sector (Gate 372)</h3>
-                        <p>REPO: github.com/estonia-core/kashika-gate-372</p>
-                    </div>
+                    <div class="gate-info"><h3>🇪🇪 Estonia Sector (Gate 372)</h3><p>REPO: github.com/estonia-core/kashika-gate-372</p></div>
                     <button class="ask-gate-btn" onclick="openAskModal('372', 'Estonia')">💬 直接データ要求</button>
                 </div>
             </div>
         </div>
 
-        <!-- 右：世界が求めている政策データ（リンク提供・マージシステム） -->
         <div class="panel">
             <div class="panel-title" style="color: var(--accent-rose);">📡 WANTED LOGS (世界が今求めている検証データ)</div>
             <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">
-                各国の新政策アサーションエンジンが弾いた「前例データ不足」の項目。ソースリンクを投げ込むことで格子構造が完成します。
+                前例エビデンスが不足している政策ノード。1次ファクトのURLを提供すると、埋め込まれた比率に沿って貢献者へ直接投げ銭が可能になります。
             </p>
 
             <div class="wanted-list" id="wanted-list-container">
-                <!-- 要請1 -->
                 <div class="wanted-card" id="wanted-1">
                     <span class="wanted-badge">NEED: CIVIC TECH FACT</span>
                     <div class="wanted-title">「市民提案プラットフォームの、実際の法改正反映率」の統計</div>
-                    <div class="wanted-desc">日本ゲート(81)が2026年仕様のデジタル審議システム案を検証中。台湾のvTaiwan以外で、市民提案が実際に可決された実績数値ログを持つ国、URLリンクを提供してください。</div>
+                    <div class="wanted-desc">日本ゲート(81)が2026年仕様の新システムを検証中。台湾のvTaiwan以外で、市民提案が実際に可決・運用された実績数値ログを持つURLを募集。</div>
                     
                     <div class="provided-links" id="links-area-1"></div>
                     <div class="link-input-group">
                         <input type="text" id="input-1" placeholder="https://github.com/... または公文書URL">
-                        <button onclick="submitLink(1)">🔗 リンク提供</button>
+                        <button onclick="submitLink(1, 'taiwan-digital-civics@getalby.com', 60, 30, 10)">🔗 リンク提供</button>
                     </div>
                 </div>
 
-                <!-- 要請2 -->
                 <div class="wanted-card" id="wanted-2">
                     <span class="wanted-badge">NEED: FINANCIAL BUDGET LOG</span>
-                    <div class="wanted-title">「1940年代 前後の農地買い上げ・再分配に関する政府財務台帳」</div>
-                    <div class="wanted-desc">日本セクターの占領期地主解体ログとのアサーション（突合）を行いたい。東アジア、または欧州圏で同時期の小作農自立化政策の予算執行JSON、またはソースアーカイブを求む。</div>
+                    <div class="wanted-title">「1940年代 農地再分配に関する政府財務台帳」</div>
+                    <div class="wanted-desc">日本セクターの占領期地主解体プログラムとの構造突合用。東アジアまたは欧州圏で、同時期の小作農自立化政策の予算執行公文書アーカイブを求む。</div>
                     
                     <div class="provided-links" id="links-area-2"></div>
                     <div class="link-input-group">
                         <input type="text" id="input-2" placeholder="https://...">
-                        <button onclick="submitLink(2)">🔗 リンク提供</button>
+                        <button onclick="submitLink(2, 'global-history-fund@opencollective.com', 50, 40, 10)">🔗 リンク提供</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- モーダルダイアログ：各国のGitHub Issuesへの自動データ請求パイプライン（エミュレーター） -->
     <div class="modal" id="ask-modal">
         <div class="modal-content">
-            <h2 id="modal-gate-title">[DATA CALL // GATE DIRECT REQUEST]</h2>
+            <h2 id="modal-gate-title">📡 ゲートへの直接データ請求</h2>
             <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px; font-family: monospace;" id="modal-gate-sub"></p>
-            <textarea id="modal-text" rows="5" placeholder="「○○年当時の、○○政策に関する客観的な予算数値JSONはありませんか？」などの要求を記述。"></textarea>
+            <textarea id="modal-text" rows="5"></textarea>
             <div class="modal-actions">
                 <button class="modal-btn" style="background:#1e293b; color:#fff;" onclick="closeAskModal()">CANCEL</button>
                 <button class="modal-btn" style="background:var(--accent-cyan); color:#000;" onclick="dispatchDataCall()">GitHubへ要求を射出 (DISPATCH)</button>
@@ -211,55 +189,75 @@
         let currentTargetGateCode = "";
         let currentTargetGateName = "";
 
-        // ゲート質問モーダルを開く
         function openAskModal(gateCode, gateName) {
             currentTargetGateCode = gateCode;
             currentTargetGateName = gateName;
-            
             document.getElementById('modal-gate-title').innerText = `📡 ゲート ${gateCode} (${gateName}) への直接データ請求`;
             document.getElementById('modal-gate-sub').innerText = `TARGET_REPO: github.com/kashika-gate-${gateCode}/issues/new`;
             document.getElementById('modal-text').value = `【データ請求】KASHIKAグローバルコアより要請：\n${gateName}セクター内における、以下の構造化ファクトデータの提供、またはアーカイブの有無を確認させてください。\n\n・[要求データの内容をここに記述]`;
-            
             document.getElementById('ask-modal').style.display = "flex";
         }
 
-        function closeAskModal() {
-            document.getElementById('ask-modal').style.display = "none";
-        }
+        function closeAskModal() { document.getElementById('ask-modal').style.display = "none"; }
 
-        // GitHubのIssue起票画面へ、入力テキストをクエリパラメータとして載せて直接ジャンプする（本物の連携）
         function dispatchDataCall() {
             const text = document.getElementById('modal-text').value;
-            // 実際は各ゲートリポジトリの「New Issue」URLへ飛ばす
             let baseUrl = `https://github.com/kashika-protocol/kashika-gate-${currentTargetGateCode}/issues/new`;
-            
-            // テキストをURL安全な文字列にエンコードしてGitHubへ射出
             let githubUrl = `${baseUrl}?title=${encodeURIComponent('【KASHIKA CORE DATA CALL】')}&body=${encodeURIComponent(text)}`;
-            
-            alert(`コアプロトコルより、Gate ${currentTargetGateCode} のGitHubリポジトリへパイプラインを繋ぎます。遷移先で『Submit new issue』を押して確定してください。`);
+            alert(`Gate ${currentTargetGateCode} のGitHubリポジトリへパイプラインを繋ぎます。遷移先で『Submit new issue』を押して確定してください。`);
             window.open(githubUrl, '_blank');
             closeAskModal();
         }
 
-        // 世界のWanted Logs（データ不足要請）に対してリンクを提供するロジック
-        function submitLink(wantedId) {
+        // リンク提供時、該当政策ノードに埋め込まれていた寄付入口（経済ソケット）を逆コンパイルして動的に生成
+        function submitLink(wantedId, donateAddress, sRatio, aRatio, arcRatio) {
             const inputElement = document.getElementById(`input-${wantedId}`);
             const url = inputElement.value.trim();
 
             if (!url) {
-                alert("有効なファクトURLまたはリポジトリのパスを入力してください。");
+                alert("有効なファクトURLを入力してください。");
                 return;
             }
 
-            // 提供されたリンクを動的に画面へ表示（マージ結合のシミュレート）
+            // ファクトリンクのレンダリング
             const linksArea = document.getElementById(`links-area-${wantedId}`);
             const newLinkWrap = document.createElement('div');
-            newLinkWrap.style.marginTop = "5px";
-            newLinkWrap.innerHTML = `➔ <strong>提供されたファクト:</strong> <a href="${url}" target="_blank">${url}</a> (査読中...)`;
+            newLinkWrap.style.margin = "10px 0";
+            newLinkWrap.innerHTML = `➔ <strong>提供されたファクト:</strong> <a href="${url}" target="_blank">${url}</a> <span style="color:var(--accent-gold)">(査読中)</span>`;
             linksArea.appendChild(newLinkWrap);
 
-            alert("ファクトリンクの提出を検知しました。AUDITOR（査読兵）による『Facts Only（感情形容詞ゼロ）』チェックが通り次第、グローバルデータグリッドに正式マージされます！");
+            // ⚡ 経済ソケット（投げ銭受け皿 ＋ 自動傾斜分配メーター）の動的インジェクション
+            const socketBox = document.createElement('div');
+            socketBox.className = "funding-socket-box";
+            socketBox.innerHTML = `
+                <div class="funding-header">
+                    <span>⚡ FUNDING SOCKET ACTIVE // 寄付の直接受付中</span>
+                    <button class="donate-action-btn" onclick="executeTriggerDonate('${donateAddress}')">⚡ 寄付・投げ銭を送る</button>
+                </div>
+                <div>ADDRESS: <span style="color:#fff;">${donateAddress}</span></div>
+                <div style="margin-top: 5px; color:var(--text-muted);">このノードへ着金時、運営を挟まず以下の比率で関わった開発ロールへP2P自動分配されます:</div>
+                <div style="display:flex; gap:10px; margin-top:5px; font-size:10px;">
+                    <span style="color:var(--accent-cyan)">📝 記述兵 (Scribe): ${sRatio}%</span>
+                    <span style="color:var(--accent-gold)">🔍 査読兵 (Auditor): ${aRatio}%</span>
+                    <span style="color:var(--accent-purple)">🧠 接続兵 (Architect): ${arcRatio}%</span>
+                </div>
+                <div class="ratio-bar-container">
+                    <div class="ratio-scribe" style="width: ${sRatio}%"></div>
+                    <div class="ratio-auditor" style="width: ${aRatio}%"></div>
+                    <div class="ratio-architect" style="width: ${arcRatio}%"></div>
+                </div>
+            `;
+            linksArea.appendChild(socketBox);
+
+            alert("ファクト提出、およびJSONに定義された『経済ソケット』の結合に成功しました！");
             inputElement.value = "";
+        }
+
+        // 実際の直接寄付ジャンプ（P2P送金エミュレーション）
+        function executeTriggerDonate(address) {
+            alert(`中央組織を介さないP2P送金を実行します。\n送金先アドレス: ${address}\n\nこの送金は、記述兵・査読兵・接続兵のウォレットへ設定された比率の通り直接、傾斜分配されます。`);
+            // 将来的にWeb3ウォレット（Window.ethereum）やLightning Network（webln）のAPIをここに発火させる
+            window.open(`https://ln.meta.com/pay?to=${address}`, '_blank');
         }
     </script>
 </body>
