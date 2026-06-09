@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KASHIKA (可視化) - Global Open Policy Ledger</title>
+    <title>KASHIKA (可視化) - Japan Gate 81</title>
     <style>
         :root {
             --bg-color: #0b0f19;
             --panel-bg: rgba(20, 28, 47, 0.7);
             --accent-modern: #00f2fe;
             --accent-ghq: #f59e0b;
+            --accent-imperial: #10b981;
+            --accent-conflict: #ef4444;
             --text-color: #e2e8f0;
             --text-muted: #64748b;
             --border-color: #1e293b;
+            --current-accent: #00f2fe;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -22,6 +25,7 @@
             font-family: 'Helvetica Neue', Arial, sans-serif;
             overflow: hidden;
             height: 100vh;
+            transition: background 0.5s;
         }
 
         /* アニメ的なSFグリッド背景 */
@@ -39,14 +43,14 @@
             position: relative;
             z-index: 2;
             display: grid;
-            grid-template-columns: 280px 1fr;
+            grid-template-columns: 290px 1fr;
             height: 100vh;
             backdrop-filter: blur(4px);
         }
 
         /* 左側：歴史の地層タイムライン（Era） */
         .sidebar {
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15, 23, 42, 0.9);
             border-right: 2px solid var(--border-color);
             padding: 20px;
             display: flex;
@@ -60,6 +64,7 @@
             background: linear-gradient(45deg, #00f2fe, #4facfe);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            transition: all 0.5s;
         }
 
         .era-strata {
@@ -70,7 +75,6 @@
             position: relative;
         }
 
-        /* 地層を表現する縦線 */
         .era-strata::before {
             content: '';
             position: absolute;
@@ -105,23 +109,17 @@
             transition: all 0.3s;
         }
 
-        /* 現代のアクティブ状態 */
-        .era-card.modern.active {
-            border-color: var(--accent-modern);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
-            transform: translateX(5px);
-        }
+        /* 各時代のアクティブ状態の定義 */
+        .era-card.modern.active { border-color: var(--accent-modern); box-shadow: 0 0 15px rgba(0, 242, 254, 0.2); transform: translateX(5px); }
         .era-card.modern.active::before { background: var(--accent-modern); }
 
-        /* GHQ占領期のアクティブ状態 */
-        .era-card.ghq.active {
-            border-color: var(--accent-ghq);
-            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
-            transform: translateX(5px);
-        }
+        .era-card.ghq.active { border-color: var(--accent-ghq); box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); transform: translateX(5px); }
         .era-card.ghq.active::before { background: var(--accent-ghq); }
 
-        .era-card h3 { font-size: 14px; margin-bottom: 5px; }
+        .era-card.imperial.active { border-color: var(--accent-imperial); box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); transform: translateX(5px); }
+        .era-card.imperial.active::before { background: var(--accent-imperial); }
+
+        .era-card h3 { font-size: 13px; margin-bottom: 5px; letter-spacing: 1px; }
         .era-card p { font-size: 11px; color: var(--text-muted); }
 
         /* 右側：メインコンテンツ表示領域 */
@@ -143,11 +141,10 @@
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 1fr 350px;
+            grid-template-columns: 1fr 380px;
             gap: 20px;
         }
 
-        /* 政策カード・ビジュアルパネル */
         .data-panel {
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
@@ -157,26 +154,37 @@
             transition: border-color 0.5s;
         }
 
-        /* 擬似レーダーチャート（CSSアート） */
+        /* 擬似レーダー・コンフリクトインジケーター */
         .chart-container {
             width: 100%;
-            height: 180px;
+            height: 160px;
             display: flex;
             justify-content: center;
             align-items: center;
             margin: 20px 0;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.3);
             border-radius: 8px;
             border: 1px dashed var(--border-color);
+            position: relative;
         }
 
-        .mock-radar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 2px solid;
-            position: relative;
-            animation: pulse 2s infinite;
+        .conflict-badge {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--accent-conflict);
+            color: #fca5a5;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; border-color: var(--accent-conflict); box-shadow: 0 0 10px rgba(239,68,68,0.3); }
+            50% { opacity: 0.7; border-color: transparent; box-shadow: none; }
         }
 
         /* 年輪（実績SBT）インジケーター */
@@ -184,43 +192,30 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             padding: 20px;
             background: rgba(0,0,0,0.2);
             border-radius: 8px;
         }
 
         .tree-rings {
-            width: 120px;
-            height: 120px;
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
-            border: 4px solid #1e293b;
+            border: 4px solid var(--border-color);
             display: flex;
             justify-content: center;
             align-items: center;
             position: relative;
+            transition: border-color 0.5s;
         }
         .tree-rings::before {
-            content: '';
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 3px solid #334155;
-            position: absolute;
+            content: ''; width: 75px; height: 75px; border-radius: 50%;
+            border: 3px solid rgba(100,116,139,0.3); position: absolute;
         }
         .tree-rings::after {
-            content: '';
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid #475569;
-            position: absolute;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.8; }
+            content: ''; width: 40px; height: 40px; border-radius: 50%;
+            border: 2px solid rgba(100,116,139,0.5); position: absolute;
         }
 
         .badge-tag {
@@ -230,15 +225,40 @@
             font-size: 11px;
             font-weight: bold;
             text-transform: uppercase;
+            transition: all 0.5s;
         }
 
-        /* ログの流動的なアニメ風フォント */
+        .log-box {
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            border-left: 3px solid var(--current-accent);
+            transition: border-color 0.5s;
+        }
+
         .log-text {
-            font-family: monospace;
+            font-family: 'Courier New', Courier, monospace;
             font-size: 13px;
             line-height: 1.6;
-            color: #a7f3d0;
         }
+
+        .parallel-sources {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .source-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 6px;
+        }
+
+        .source-card h4 { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
+        .source-card p { font-size: 13px; font-family: monospace; }
     </style>
 </head>
 <body>
@@ -246,11 +266,10 @@
     <div class="grid-bg"></div>
 
     <div class="app-container">
-        <!-- サイドバー：地層選択 -->
         <div class="sidebar">
             <div class="logo-area">
-                <h1>KASHIKA // 81</h1>
-                <p style="font-size: 10px; color: var(--text-muted);">FEDERATED LEDGER SYSTEM</p>
+                <h1 id="main-logo">KASHIKA // 81</h1>
+                <p style="font-size: 10px; color: var(--text-muted);">JAPAN GATEWAY LEDGER</p>
             </div>
 
             <div class="era-strata">
@@ -262,114 +281,184 @@
                     <h3>1945 - 1952</h3>
                     <p>初期：GHQ占領政策・憲法ビルド期</p>
                 </div>
+                <div class="era-card imperial" onclick="switchEra('imperial', this)">
+                    <h3>1895 - 1945</h3>
+                    <p>拡張：大日本帝国・外地インフラ期</p>
+                </div>
             </div>
         </div>
 
-        <!-- メインコンテンツ領域 -->
         <div class="main-content">
             <div class="header-status">
                 <div>
                     <h2 id="current-era-title">現代セクター (2000_present_modern)</h2>
-                    <p style="font-size: 12px; color: var(--text-muted);">格子状に配置された政策構造ログのレンダリング</p>
+                    <p style="font-size: 12px; color: var(--text-muted);">格子状に配置された政策構造ログのアサーション（整合性検証）</p>
                 </div>
-                <span id="era-badge" class="badge-tag" style="background: rgba(0, 242, 254, 0.2); color: var(--accent-modern);">Active Mode</span>
+                <span id="era-badge" class="badge-tag" style="background: rgba(0, 242, 254, 0.2); color: var(--accent-modern);">GRID CONSISTENT</span>
             </div>
 
             <div class="dashboard-grid">
-                <!-- 左側：政策詳細と成分分析 -->
                 <div class="data-panel" id="policy-panel">
-                    <h2 id="policy-title" style="color: var(--accent-modern);">デジタル公的個人認証口座紐付け案</h2>
+                    <h2 id="policy-title" style="color: var(--accent-modern); transition: color 0.5s;">デジタル公的個人認証口座紐付け案</h2>
                     <p id="policy-summary" style="margin-top: 10px; font-size: 14px; line-height: 1.6;">
                         行政手続きの高速化と給付金の誤支給防止を目的とした、全市民の口座データ構造化インフラ整備。
                     </p>
 
-                    <h3 style="margin-top: 30px; font-size: 14px; color: var(--text-muted);">[成分分析レーダー]</h3>
-                    <div class="chart-container">
-                        <div class="mock-radar" id="radar-visual" style="border-color: var(--accent-modern);"></div>
-                    </div>
-
-                    <h3 style="margin-top: 20px; font-size: 14px; color: var(--text-muted);">[検証されたファクトログ]</h3>
-                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 6px; margin-top: 10px;">
-                        <p class="log-text" id="log-content">★ 審議時間合計42時間。システム連携時におけるレガシー銀行システム側の負荷テストが課題として浮上。</p>
-                    </div>
-                </div>
-
-                <!-- 右側：人と団体の実績（年輪） -->
-                <div class="data-panel" style="display: flex; flex-direction: column; gap: 20px;">
-                    <div>
-                        <h3 style="font-size: 14px; margin-bottom: 15px;">担当査読団体の実績（SBT）</h3>
-                        <div class="rings-container">
-                            <div class="tree-rings" id="tree-rings-visual" style="border-color: var(--accent-modern);"></div>
-                            <p style="font-size: 13px; font-weight: bold;" id="reviewer-name">東大阪シビックテック結社</p>
-                            <p style="font-size: 11px; color: var(--text-muted);">SBTマージ実績: 42回合格</p>
+                    <h3 style="margin-top: 25px; font-size: 13px; color: var(--text-muted); letter-spacing: 1px;">[自動データ整合性チェック（アサーションエンジン）]</h3>
+                    <div class="chart-container" id="visual-container">
+                        <div class="conflict-badge" id="assertion-status" style="border-color: var(--accent-modern); color: var(--accent-modern); background: transparent;">
+                            ✅ DATA BINDING: CONSISTENT (格子完全結合)
                         </div>
                     </div>
 
-                    <div style="border-top: 1px solid var(--border-color); padding-top: 15px;">
-                        <h4 style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">世界ポインタ（グローバル参照）</h4>
-                        <p style="font-size: 12px; line-height: 1.4;" id="global-ref-text">
-                            🔍 <strong>国番号 91 (インド)</strong>: 「アーダール」の失敗事例を参照中（高齢者認証エラーのバグ報告と結合）。
-                        </p>
+                    <h3 style="font-size: 13px; color: var(--text-muted); letter-spacing: 1px;">[アサーション対象フィールドの並列展開]</h3>
+                    <div class="parallel-sources" id="source-container">
+                        </div>
+                </div>
+
+                <div class="data-panel" style="display: flex; flex-direction: column; gap: 20px;">
+                    <div>
+                        <h3 style="font-size: 13px; margin-bottom: 12px; color: var(--text-muted);">[並列貢献ロール：査読実績]</h3>
+                        <div class="rings-container">
+                            <div class="tree-rings" id="tree-rings-visual" style="border-color: var(--accent-modern);"></div>
+                            <p style="font-size: 13px; font-weight: bold;" id="reviewer-name">東大阪シビックテック結社</p>
+                            <p style="font-size: 11px; color: var(--text-muted);" id="role-badge">🛡️ AUDITOR / マージ実績: 42回検証済</p>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 20px;" id="global-section">
+                        <h4 style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; letter-spacing: 1px;">[世界ポインタ（CROSS-GATE REFERENCE）]</h4>
+                        <div class="log-box" id="log-box-element">
+                            <p class="log-text" id="global-ref-text">
+                                🔍 <strong>国番号 91 (インド)</strong>: 「アーダール」の失敗事例を参照中（高齢者認証エラーのバグ報告と結合）。
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- インタラクション制御スクリプト -->
     <script>
+        // 国を跨いだデータ結合と矛盾（コンフリクト）のファクトデータ
         const data = {
             modern: {
                 title: "現代セクター (2000_present_modern)",
-                badgeColor: "rgba(0, 242, 254, 0.2)",
                 accentColor: "#00f2fe",
+                badgeText: "GRID CONSISTENT",
+                badgeBg: "rgba(0, 242, 254, 0.2)",
                 policyTitle: "デジタル公的個人認証口座紐付け案",
                 summary: "行政手続きの高速化と給付金の誤支給防止を目的とした、全市民の口座データ構造化インフラ整備。レガシーな銀行APIのオープン化を加速させるパッチ政策。",
-                log: "★ 審議時間合計42時間。システム連携時におけるレガシー銀行システム側の負荷テストが課題として浮上。コードベースはクリーン。",
+                assertionStatus: "✅ DATA BINDING: CONSISTENT (格子完全結合)",
+                isConflict: false,
+                sources: [
+                    { label: "kashika-gate-81 (日本政府公認データ)", value: "STATUS: IMPLEMENTED / ERROR_RATE: 0.00%" },
+                    { label: "kashika-gate-91 (インド・アーダール比較)", value: "STATUS: REFERENCED / SYSTEM_MATCH: OK" }
+                ],
                 reviewer: "東大阪シビックテック結社",
+                role: "🛡️ AUDITOR / マージ実績: 42回検証済",
                 globalRef: "🔍 <strong>国番号 91 (インド)</strong>: 「アーダール」の失敗事例を参照中（高齢者認証エラーのバグ報告と結合）。"
             },
             ghq: {
                 title: "占領政策セクター (1945_1952_ghq)",
-                badgeColor: "rgba(245, 158, 11, 0.2)",
                 accentColor: "#f59e0b",
+                badgeText: "GRID CONSISTENT",
+                badgeBg: "rgba(245, 158, 11, 0.2)",
                 policyTitle: "自作農創設特別措置法（第二次農地改革）",
                 summary: "寄生地主制を打破し、実際に耕作を行う農民へ土地の所有権を強制的に再分配する、日本社会の経済OS初期ビルドプログラム。GHQの強力なトップダウン指令に基づく。",
-                log: "★ ファクトログ：1946年10月公布。約200万町歩の地主地が買収され、小作地の大半が自作地へとリファクタリング完了。経済の民主化を強制執行。",
-                reviewer: "KASHIKA歴史データ検証班 (SBT-Level 5)",
+                assertionStatus: "✅ DATA BINDING: CONSISTENT (格子完全結合)",
+                isConflict: false,
+                sources: [
+                    { label: "kashika-gate-81 (農林省告示第百四号)", value: "REFACTORED_LAND: 2,000,000 CHO" },
+                    { label: "kashika-core (米国国立公文書館 NARA)", value: "SCAP_DIRECTIVE: SIGNED / MATCH_CONFIRMED" }
+                ],
+                reviewer: "KASHIKA歴史データ検証班",
+                role: "📝 SCRIBE / 1次資料写経実績: 154ファイル",
                 globalRef: "🔍 <strong>国番号 1 (アメリカ)</strong>: 国立公文書館(NARA)所蔵の「GHQ/SCAP文書」の一次ソースポインタを直接参照中。"
+            },
+            imperial: {
+                title: "大日本帝国・外地セクター (1895_1945_imperial)",
+                accentColor: "#10b981",
+                badgeText: "⚠️ CONFLICT DETECTED",
+                badgeBg: "rgba(239, 68, 68, 0.2)",
+                policyTitle: "1935年 満州鉄道拡張都市インフラ投資計画",
+                summary: "戦前の外地政策におけるインフラ投資ログ。大蔵省資料と現地側の接収・財務記録において、アサーションターゲット [value]（出資額/受入額）のデータ衝突が発生しています。",
+                assertionStatus: "⚠️ ALERT: CONFLICT DETECTED (データ構造の矛盾を検知)",
+                isConflict: true,
+                sources: [
+                    { label: "kashika-gate-81 (大蔵省昭和財政史)", value: "VALUE: 50,000,000 JPY (出資記録)" },
+                    { label: "kashika-gate-X (現地側接収財務記録)", value: "VALUE: 35,000,000 JPY (受入記録)" }
+                ],
+                reviewer: "ARCHITECT (接続特化チーム)",
+                role: "🧠 ARCHITECT / クロスゲート・マッピング解決ログ: 12件",
+                globalRef: "💥 <strong>不一致差分: 15,000,000 JPY</strong><br>システムは解釈を下しません。この「⚠️矛盾マーク」自体が、検証すべき未解決のファクト領域であることを示しています。"
             }
         };
 
         function switchEra(eraKey, element) {
-            // アクティブなクラスの付け替え
-            document.querySelectorAll('.era-card').forEach(card => {
-                card.classList.remove('active');
-            });
+            // クラスの切り替え
+            document.querySelectorAll('.era-card').forEach(card => card.classList.remove('active'));
             element.classList.add('active');
 
             const eraData = data[eraKey];
             
-            // テキストのドラマチックな書き換え
+            // CSS変数を動的にアップデート（全体のテーマカラー同期）
+            document.documentElement.style.setProperty('--current-accent', eraData.accentColor);
+            
+            // テキスト・バッジの更新
             document.getElementById('current-era-title').innerText = eraData.title;
             
             const badge = document.getElementById('era-badge');
-            badge.style.background = eraData.badgeColor;
-            badge.style.color = eraData.accentColor;
+            badge.innerText = eraData.badgeText;
+            badge.style.background = eraData.badgeBg;
+            badge.style.color = eraData.isConflict ? "#ef4444" : eraData.accentColor;
 
             const pTitle = document.getElementById('policy-title');
             pTitle.innerText = eraData.policyTitle;
-            pTitle.style.color = eraData.accentColor;
+            pTitle.style.color = eraData.isConflict ? "#ef4444" : eraData.accentColor;
 
             document.getElementById('policy-summary').innerText = eraData.summary;
-            document.getElementById('log-content').innerText = eraData.log;
             document.getElementById('reviewer-name').innerText = eraData.reviewer;
+            document.getElementById('role-badge').innerText = eraData.role;
             document.getElementById('global-ref-text').innerHTML = eraData.globalRef;
 
-            // ビジュアルコンポーネントの色（格子）を動的に同期
-            document.getElementById('radar-visual').style.borderColor = eraData.accentColor;
-            document.getElementById('tree-rings-visual').style.borderColor = eraData.accentColor;
+            // コンフリクトバッジのスタイル動的変更
+            const statusBox = document.getElementById('assertion-status');
+            statusBox.innerText = eraData.assertionStatus;
+            if (eraData.isConflict) {
+                statusBox.className = "conflict-badge";
+                statusBox.style.borderColor = "#ef4444";
+                statusBox.style.color = "#fca5a5";
+                statusBox.style.background = "rgba(239, 68, 68, 0.15)";
+            } else {
+                statusBox.className = "";
+                statusBox.style.borderColor = "transparent";
+                statusBox.style.color = eraData.accentColor;
+                statusBox.style.background = "transparent";
+                statusBox.style.fontSize = "14px";
+                statusBox.style.fontFamily = "monospace";
+            }
+
+            // 並列ソースカードの動的生成
+            const sourceContainer = document.getElementById('source-container');
+            sourceContainer.innerHTML = "";
+            eraData.sources.forEach(src => {
+                const card = document.createElement('div');
+                card.className = "source-card";
+                card.style.borderLeft = `3px solid ${eraData.isConflict ? '#ef4444' : eraData.accentColor}`;
+                card.innerHTML = `<h4>${src.label}</h4><p>${src.value}</p>`;
+                sourceContainer.appendChild(card);
+            });
+
+            // 右側のビジュアル同期
+            document.getElementById('tree-rings-visual').style.borderColor = eraData.isConflict ? '#ef4444' : eraData.accentColor;
+            document.getElementById('log-box-element').style.borderLeftColor = eraData.isConflict ? '#ef4444' : eraData.accentColor;
         }
+
+        // 初期ロード時に「現代」のカードを展開
+        window.onload = function() {
+            switchEra('modern', document.querySelector('.era-card.modern'));
+        };
     </script>
 </body>
 </html>
