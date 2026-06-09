@@ -88,7 +88,7 @@
         .source-card h4 { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
         .source-card p { font-size: 13px; font-family: monospace; line-height: 1.5; }
 
-        /* 海外前例自動バックアップ＆経済ソケット表示エリア */
+        /* 海外前例バックアップ＆経済ソケット表示エリア */
         .backup-ledger-box { background: rgba(168, 85, 247, 0.05); border: 1px solid rgba(168, 85, 247, 0.3); padding: 18px; border-radius: 8px; margin-top: 20px; }
         .backup-title { color: #d8b4fe; font-size: 13px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
         
@@ -96,17 +96,17 @@
         .impact-log-table th { color: var(--text-muted); text-align: left; padding: 6px; border-bottom: 1px solid var(--border-color); }
         .impact-log-table td { padding: 8px 6px; border-bottom: 1px solid rgba(255,255,255,0.03); }
 
-        /* ⚡ 日本画面側での投げ銭ソケットUI */
-        .p2p-funding-socket {
+        /* ⚡ 事後感謝型 P2P 決済ソケット */
+        .p2p-thanks-socket {
             background: rgba(251, 191, 36, 0.03); border: 1px dashed rgba(251, 191, 36, 0.3);
             border-radius: 6px; padding: 12px; margin-top: 15px; font-size: 11px; font-family: monospace;
         }
         .funding-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .p2p-donate-btn {
+        .p2p-thanks-btn {
             background: linear-gradient(135deg, #fbbf24, #d97706); border: none; padding: 4px 10px;
             border-radius: 4px; color: #000; font-weight: bold; font-size: 10px; cursor: pointer; transition: all 0.2s;
         }
-        .p2p-donate-btn:hover { transform: scale(1.03); box-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
+        .p2p-thanks-btn:hover { transform: scale(1.03); box-shadow: 0 0 10px rgba(251, 191, 36, 0.3); }
         
         .ratio-bar-container { display: flex; height: 5px; border-radius: 2px; overflow: hidden; margin-top: 8px; background: #1e293b; }
         .ratio-scribe { background: #22d3ee; }
@@ -144,7 +144,7 @@
             <div class="header-status">
                 <div>
                     <h2 id="current-era-title">現代セクター</h2>
-                    <p id="era-description" style="font-size: 12px; color: var(--text-muted);">格子状にマッピングされた構造化ログのリアルタイムアサーション</p>
+                    <p id="era-description" style="font-size: 12px; color: var(--text-muted);">並列インデックスされた構造化ログのクロスゲート相互突合（アサーション）</p>
                 </div>
                 <span id="global-matrix-badge" class="badge-tag">MATRIX ACTIVE</span>
             </div>
@@ -158,7 +158,7 @@
                         <div id="assertion-badge-element" class="assertion-badge">ENGINE INITIALIZING</div>
                     </div>
 
-                    <h3 style="font-size: 12px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase;">[ 1次ファクト台帳・クロスゲート接続 ]</h3>
+                    <h3 style="font-size: 12px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase;">[ 1次ファクト台帳・クロスゲート接続ポインタ ]</h3>
                     <div class="parallel-sources" id="sources-wrapper"></div>
 
                     <div id="cross-gate-backup-area"></div>
@@ -166,7 +166,7 @@
 
                 <div class="data-panel" style="display: flex; flex-direction: column; gap: 20px;">
                     <div>
-                        <h3 style="font-size: 12px; margin-bottom: 12px; color: var(--text-muted); text-transform: uppercase;">[ 並列貢献ロール認証 ]</h3>
+                        <h3 style="font-size: 12px; margin-bottom: 12px; color: var(--text-muted); text-transform: uppercase;">[ 国内貢献ロール認証 ]</h3>
                         <div class="rings-container">
                             <div class="tree-rings" id="tree-rings-visual"></div>
                             <p style="font-size: 13px; font-weight: bold;" id="meta-contributor">---</p>
@@ -175,7 +175,7 @@
                     </div>
 
                     <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
-                        <h4 style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase;">[ コア接続ポインタメタデータ ]</h4>
+                        <h4 style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase;">[ コア結合ポインタ・メタデータ ]</h4>
                         <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 6px; font-family: monospace; font-size: 11px; line-height: 1.6; color: #38bdf8;" id="meta-pointers">
                         </div>
                     </div>
@@ -189,13 +189,13 @@
             modern: {
                 title: "現代セクター (2000_present_modern)",
                 color: "#00f2fe",
-                policy: "デジタル公的個人認証・市民投票インフラの整備案",
-                summary: "2026年度仕様変更案。先行する海外ゲートのデータ構造をアサーション（突合）し、バグの事前検知を行うバックアップ対象政策。",
+                policy: "デジタル公的個人認証・市民対話投票インフラの整備案",
+                summary: "2026年度国内システム仕様変更案。先行する海外ゲートのデータ構造をアサーション（突合）し、設計バグの事前検知を行うバックアップ対象政策。",
                 assertion: { text: "⚡ CROSS-GATE BINDING: AUTONOMOUS BACKUP (海外前例による構造支援あり)", type: "backup" },
                 sources: [
                     { gate: "kashika-gate-81 (日本国案)", log: "ID: 81_prop_2026_vote<br>STATUS: PROPOSED<br>BUDGET: 12,000,000 USD" }
                 ],
-                // 🧠 v0.4.0仕様：吸い込んできた台湾の生データに「経済分配ソケット」を完全パッチ
+                // 🧠 v0.6.0：海外から吸い込んできた生ファクトに「事後感謝（Thanks）ソケット」を統合
                 crossGateFetchPointer: {
                     gate_code: "886",
                     country_name: "Taiwan",
@@ -205,13 +205,13 @@
                         "title": "vTaiwan（デジタル市民対話プラットフォーム）の法整備",
                         "status": "implemented",
                         "impact_logs": [
-                            { "metric": "Uber進出に伴う法改正の合意形成期間", "before": "不透明・長期化", "after": "4週間でステークホルダー間の合意形成を完了" },
-                            { "metric": "市民提案の政策反映率", "before": "5%未満", "after": "80%以上の合意案が閣議へ上程" }
+                            { "metric": "新産業進出に伴う法改正の合意形成期間", "before": "不透明・長期の政治論争", "after": "わずか 4 週間でステークホルダー間の合意形成を完了" },
+                            { "metric": "市民提案の政策（閣議上程）反映率", "before": "5% 未満 (陳情止まり)", "after": "80% 以上の合意案が実際に閣議へ上程・可決" }
                         ],
-                        // ⚡ 経済ソケットデータ
+                        // ⚡ 事後感謝型経済ソケット（Thanks Socket）規格
                         "funding_sockets": {
                             "destination_address": "taiwan-digital-civics@getalby.com",
-                            "allocation_ratio": { "scribes": 60, "auditors": 30, "architects": 10 }
+                            "allocation_ratio": { "scribes": 70, "auditors": 20, "architects": 10 }
                         }
                     }
                 },
@@ -223,7 +223,7 @@
                 title: "占領政策セクター (1945_1952_ghq)",
                 color: "#f59e0b",
                 policy: "自作農創設特別措置法（第二次農地改革）",
-                summary: "寄生地主制の解体、および耕作農民への土地所有権強制再分配プログラム。大元リポジトリ（kashika-core）でマッピングされた米国公文書館の記録と100%一致。",
+                summary: "寄生地主制の徹底解体、および耕作農民への土地所有権の強制再分配プログラム。大元リポジトリ（kashika-core）でマッピングされた米国公文書館の記録と100%一致。",
                 assertion: { text: "✅ CORRELATION: MATCHED (コアマスターデータと100%一致)", type: "matched" },
                 sources: [
                     { gate: "kashika-gate-81 (農林省告示第104号)", log: "REFACTORED_LAND: 2,000,000 CHO<br>STATUS: FULLY_EXECUTED" },
@@ -238,7 +238,7 @@
                 title: "大日本帝国・外地セクター (1895_1945_imperial)",
                 color: "#10b981",
                 policy: "1935年 満州鉄道拡張都市インフラ投資計画",
-                summary: "当時の日本の国家予算と、現地に残された財務台帳（受入ログ）のアサーション。数値に重大な食い違い（データの衝突）が検知されています。",
+                summary: "当時の日本の国家予算（大蔵省記録）と、現地に残された財務台帳（受入ログ）のアサーション。数値に重大な食い違い（データの衝突）が検知されています。",
                 assertion: { text: "⚠️ ASSERTION FAILED: CONFLICT DETECTED (データ構造の矛盾)", type: "conflict" },
                 sources: [
                     { gate: "kashika-gate-81 (大蔵省昭和財政史)", log: "VALUE: 50,000,000 JPY<br>FIELD: 出資総額記録" },
@@ -266,7 +266,6 @@
             document.getElementById('meta-role-badge').innerText = eraData.role;
             document.getElementById('meta-pointers').innerHTML = eraData.pointers;
 
-            // バッジ配色ロジック
             const badge = document.getElementById('assertion-badge-element');
             badge.innerText = eraData.assertion.text;
             if (eraData.assertion.type === 'conflict') {
@@ -280,7 +279,6 @@
                 document.getElementById('global-matrix-badge').innerText = "MATRIX ACTIVE"; document.getElementById('global-matrix-badge').style.background = "var(--accent-modern)";
             }
 
-            // ソースカードレンダリング
             const wrapper = document.getElementById('sources-wrapper');
             wrapper.innerHTML = "";
             eraData.sources.forEach(src => {
@@ -291,7 +289,7 @@
                 wrapper.appendChild(card);
             });
 
-            // 【経済ソケット対応マージロジック】
+            // 【事後感謝型経済ソケットの動的同期レンダリング】
             const backupArea = document.getElementById('cross-gate-backup-area');
             backupArea.innerHTML = "";
 
@@ -308,25 +306,25 @@
                     tableRows += `<tr><td>${log.metric}</td><td style="color:#ef4444; text-decoration:line-through;">${log.before}</td><td style="color:#10b981; font-weight:bold;">➔ ${log.after}</td></tr>`;
                 });
 
-                // ⚡ 日本のダッシュボード上にも、データをくれた海外エンジニアへのP2P投げ銭機能をインジェクション
                 backupBox.innerHTML = `
-                    <div class="backup-title"><span>🔮</span> 海外ゲート自動結合 [Gate ${pointer.gate_code}: ${pointer.country_name}] の実績</div>
+                    <div class="backup-title"><span>🔮</span> 海外参照ゲート自動結合 [Gate ${pointer.gate_code}: ${pointer.country_name}] の実証ファクト</div>
                     <p style="font-size:11px; color:#c084fc; font-family:monospace; margin-bottom:10px;">TARGET: ${fetched.title}</p>
                     <table class="impact-log-table">
-                        <thead><tr><th>検証指標</th><th>導入前</th><th>導入後の実績</th></tr></thead>
+                        <thead><tr><th>検証指標</th><th>導入前の旧OSバグ</th><th>導入後の実証結果</th></tr></thead>
                         <tbody>${tableRows}</tbody>
                     </table>
 
-                    <div class="p2p-funding-socket">
+                    <div class="p2p-thanks-socket">
                         <div class="funding-row">
-                            <span style="color:var(--accent-gold); font-weight:bold;">⚡ DATA PROVIDER P2P PORT // データ提供元へのダイレクト支援</span>
-                            <button class="p2p-donate-btn" onclick="triggerP2PDonate('${socket.destination_address}')">⚡ 台湾チームへ直接投銭</button>
+                            <span style="color:var(--accent-gold); font-weight:bold;">⚡ THANK THIS FACT // このファクトデータに助けられた</span>
+                            <button class="p2p-thanks-btn" onclick="triggerP2PThanks('${socket.destination_address}', '${fetched.title}')">⚡ 感謝を表明する</button>
                         </div>
-                        <div style="color:var(--text-muted);">ADDRESS: <span style="color:#fff;">${socket.destination_address}</span></div>
-                        <div style="display:flex; gap:10px; margin-top:5px; font-size:10px; color:var(--text-muted);">
-                            <span>記述兵: ${socket.allocation_ratio.scribes}%</span>
-                            <span>査読兵: ${socket.allocation_ratio.auditors}%</span>
-                            <span>接続兵: ${socket.allocation_ratio.architects}%</span>
+                        <div style="color:var(--text-muted);">P2P_PORT: <span style="color:#fff;">${socket.destination_address}</span></div>
+                        <div style="margin-top: 4px; color:var(--text-muted); font-size:10px;">※このデータが国内システム設計の『穴』を埋めるのに役立った際、感謝を直接送金できます（中抜き0%）。比率の通り開発ロールへ自動で傾斜分配されます。</div>
+                        <div style="display:flex; gap:10px; margin-top:6px; font-size:10px; color:var(--text-muted);">
+                            <span>シアン: 記述兵 (Scribe) ${socket.allocation_ratio.scribes}%</span>
+                            <span>ゴールド: 査読兵 (Auditor) ${socket.allocation_ratio.auditors}%</span>
+                            <span>パープル: 接続兵 (Architect) ${socket.allocation_ratio.architects}%</span>
                         </div>
                         <div class="ratio-bar-container">
                             <div class="ratio-scribe" style="width: ${socket.allocation_ratio.scribes}%"></div>
@@ -339,9 +337,9 @@
             }
         }
 
-        function triggerP2PDonate(address) {
-            alert(`【日本ゲート(81)からP2P送金発火】\n\nこの政策データを提供・査読してくれた海外の貢献者ウォレット（${address}）へ直接送金します。\n運営の中抜きは0%です。比率に沿ってエンジニア間に自動分配されます。`);
-            window.open(`https://ln.meta.com/pay?to=${address}`, '_blank');
+        function triggerP2PThanks(address, policyTitle) {
+            alert(`【KASHIKA P2P RESOLUTION // 事後感謝送金】\n\n対象ファクト: 「${policyTitle}」\n宛先アドレス: ${address}\n\n『この1次ファクト台帳のおかげで、システム設計のミッシングリンク（穴）が埋まった』という感謝のエビデンスと共に直接決済ゲートウェイへフックします。\n運営の中抜きは完全に0%です。`);
+            window.open(`https://ln.meta.com/pay?to=${address}&memo=${encodeURIComponent('Thanks for providing: ' + policyTitle)}`, '_blank');
         }
 
         window.onload = function() { switchEra('modern', document.querySelector('.era-card.modern')); };
