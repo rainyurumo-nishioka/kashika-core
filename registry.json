@@ -1,0 +1,40 @@
+{
+  "manifest_version": "1.0.0",
+  "last_updated": "2026-06-09T22:40:00Z",
+  "federated_gates": {
+    "81": {
+      "country_name": "Japan",
+      "status": "ACTIVE",
+      "governance": {
+        "lead_organization": "ARCHI KASHIKA Project Japan",
+        "root_sbt_address": "0x81_archi_kashika_root_identity_contract"
+      },
+      "repository": {
+        "provider": "github",
+        "url": "https://github.com/kashika-core/kashika-gate-81",
+        "main_branch": "main"
+      },
+      "api_endpoints": {
+        "policy_index": "https://raw.githubusercontent.com/kashika-core/kashika-gate-81/main/index.json",
+        "raw_data_root": "https://raw.githubusercontent.com/kashika-core/kashika-gate-81/main/policies/"
+      }
+    },
+    "886": {
+      "country_name": "Taiwan",
+      "status": "ACTIVE",
+      "governance": {
+        "lead_organization": "g0v KASHIKA Taiwan Taskforce",
+        "root_sbt_address": "0x886_g0v_kashika_root_identity_contract"
+      },
+      "repository": {
+        "provider": "github",
+        "url": "https://github.com/g0v-tw/kashika-gate-886",
+        "main_branch": "main"
+      },
+      "api_endpoints": {
+        "policy_index": "https://kashika.g0v.tw/api/v1/index.json",
+        "raw_data_root": "https://kashika.g0v.tw/api/v1/policies/"
+      }
+    }
+  }
+}
