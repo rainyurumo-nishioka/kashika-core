@@ -1,66 +1,99 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/kashika-core/kashika-spec/main/registry.schema.json",
-  "title": "KASHIKA Federation Registry Schema",
-  "description": "各国のKASHIKAゲート（分散リポジトリ）を安全に接続・参照するためのグローバルアドレス帳定義",
+  "title": "KASHIKA Core Registry & Cross-Gate Mapping Schema",
+  "description": "世界共通のアドレス帳、および国を跨いだデータのポインタ結合・自動矛盾検知（コンフリクトマーク）を定義するコア仕様書。",
   "type": "object",
-  "required": ["manifest_version", "last_updated", "federated_gates"],
+  "required": [
+    "version",
+    "gates",
+    "cross_gate_mappings"
+  ],
   "properties": {
-    "manifest_version": {
+    "version": {
       "type": "string",
-      "description": "レジストリ・マニフェストのバージョン（例: 1.0.0）"
+      "description": "コアスキーマのバージョン（セマンティックバージョニング）"
     },
-    "last_updated": {
-      "type": "string",
-      "format": "date-time",
-      "description": "アドレス帳の最終更新日時（ISO 8601形式）"
-    },
-    "federated_gates": {
-      "type": "object",
-      "description": "国際電話番号（国番号）をキーとした各国のゲートオブジェクト",
-      "additionalProperties": {
+    "gates": {
+      "type": "array",
+      "description": "世界に分散する独立ゲート（各国のリポジトリ）のアドレス帳",
+      "items": {
         "type": "object",
-        "required": ["country_name", "status", "repository", "api_endpoints"],
+        "required": [
+          "gate_code",
+          "country_name",
+          "repository_url"
+        ],
         "properties": {
+          "gate_code": {
+            "type": "string",
+            "pattern": "^[0-9]+$",
+            "description": "国際電話国番号をベースとしたリポジトリの識別子（例：日本='81', 台湾='886'）"
+          },
           "country_name": {
             "type": "string",
-            "description": "英語表記の国・地域名（例: Japan, Taiwan）"
+            "description": "国・地域名（英語表記推奨）"
           },
-          "status": {
+          "repository_url": {
             "type": "string",
-            "enum": ["ACTIVE", "MAINTENANCE", "DEPRECATED"],
-            "description": "ゲートの稼働ステータス"
+            "format": "uri",
+            "description": "該当ゲートが管理されている公開リポジトリ（GitHub等）のURL"
+          }
+        }
+      }
+    },
+    "cross_gate_mappings": {
+      "type": "array",
+      "description": "ARCHITECT（接続兵）が定義する、異なるゲート間における同一事象データのポインタ結合リスト。システムが自動で矛盾を検知する格子を形成します。",
+      "items": {
+        "type": "object",
+        "required": [
+          "mapping_id",
+          "event_name",
+          "assertion_target",
+          "connections"
+        ],
+        "properties": {
+          "mapping_id": {
+            "type": "string",
+            "description": "マッピングデータの一意のID（例：map_1935_railway_budget）"
           },
-          "governance": {
-            "type": "object",
-            "required": ["lead_organization"],
-            "properties": {
-              "lead_organization": { "type": "string", "description": "そのゲートの主権・管理責任を持つメイン団体名" },
-              "root_sbt_address": { "type": "string", "description": "管理団体の信頼性を証明するスマートコントラクト/SBTのアドレス" }
-            }
+          "event_name": {
+            "type": "string",
+            "description": "格子上で結合する事象の名称（人間の可視化用）"
           },
-          "repository": {
-            "type": "object",
-            "required": ["provider", "url", "main_branch"],
-            "properties": {
-              "provider": { "type": "string", "enum": ["github", "gitlab", "custom"] },
-              "url": { "type": "string", "format": "uri", "description": "独立したソースコード・データリポジトリのURL" },
-              "main_branch": { "type": "string", "default": "main" }
-            }
+          "assertion_target": {
+            "type": "string",
+            "enum": [
+              "value",
+              "date",
+              "status"
+            ],
+            "description": "システムが自動バリデーション（不一致検証）を実行する対象フィールド。数値、日付、ステータス等を指定。"
           },
-          "api_endpoints": {
-            "type": "object",
-            "required": ["policy_index", "raw_data_root"],
-            "properties": {
-              "policy_index": { 
-                "type": "string", 
-                "format": "uri", 
-                "description": "その国が保持する政策データのインデックス（目録）JSONを取得するAPI/CDNエンドポイント" 
-              },
-              "raw_data_root": { 
-                "type": "string", 
-                "format": "uri", 
-                "description": "個別政策データを取りにいく際のベースURL（末尾にIDを付与してFetchする用）" 
+          "connections": {
+            "type": "array",
+            "description": "結合対象となる各ゲートのデータへの絶対ポインタ。最低2つ以上のポインタが必要です。",
+            "minItems": 2,
+            "items": {
+              "type": "object",
+              "required": [
+                "gate_code",
+                "file_path",
+                "fact_id"
+              ],
+              "properties": {
+                "gate_code": {
+                  "type": "string",
+                  "description": "参照先ターゲットの国番号ゲート（例：'81'）"
+                },
+                "file_path": {
+                  "type": "string",
+                  "description": "リポジトリ内における該当JSONファイルへの相対パス（例：'eras/1895_1945_imperial_era/policies/81_southern_military.json'）"
+                },
+                "fact_id": {
+                  "type": "string",
+                  "description": "ファイル内で定義されている、アサーション（比較）対象のファクトデータID"
+                }
               }
             }
           }
