@@ -4,6 +4,25 @@ KASHIKA Architecture Changelog & Decision Records
 A record of the evolution of the KASHIKA project's design philosophy and the underlying intent behind its implementation.
 The historical facts of "why we chose this structure (Parallel Matrix)" are immortalized here forever.
 
+
+ーーーーー
+[2026-06-10] v0.6.0: Architectural Pivot of the Economic Layer (Refactoring from "Performance-Based Reward" to "Retrospective Gratitude-Driven" Model)
+1. Implementation & Changes (What)
+Comprehensive UI/UX Copy Refactoring: Universally migrated the call-to-action (CTA) interfaces across all global sector gates from generic monetization hooks ([⚡ DIRECT DONATE]) to fact-specific gratitude anchors: [⚡ THANK THIS FACT (I found this data helpful)].
+
+Integration of Gratitude-Triggered Settlement Logic: Implemented an anti-spam interface flow where the P2P payment socket remains dormant until a user genuinely derives utility from the structured logs—specifically when the dataset serves to validate cross-border policy mechanics or backstop civic-tech operations.
+
+2. Design Objectives & Background (Why)
+① Implementing a Fault-Tolerant Firewall Against Sybil Data Spams
+Under a traditional "Proof-of-Contribution = Direct Reward" scheme, the ecosystem risks an architectural collapse due to automated script attacks in the generative AI era. Bad actors are incentivized to perform DoS-like data-flooding with hallucinated, adjective-heavy records to secure programmatic micro-payouts.
+By shifting the paradigm to a retrospective model—where financial execution occurs only when an end-user validates the utility of the log—the economic incentive for spamming drops to zero due to negative ROI. This mechanism naturally filters out adversarial noise, ensuring that only dedicated "Scribes" who precisely transcribe primary, unadulterated sources survive and accrue systemic reputation.
+
+② Capital Allocation for Bridging the Missing Links
+In decentralized data ecosystems, the critical delta of value lies not in building high-fidelity dashboards, but in the gritty, often unrewarded labor of patching the "missing links" (the black holes of historical and administrative data).
+When a peer sector avoids a catastrophic simulation bug in their domestic legislation because a foreign node provided the precise missing data point, a profound engineering debt is cleared. Channeling financial velocity to reward the resolution of these structural vacuums ensures that gratitude flows directly across borders to the exact Scribes, Auditors, and Architects who laid down the foundational matrix.
+
+ーーーーーーー
+
 [2026-06-10] v0.5.0: Standardizing National Gate Boilerplates
 1. Implementation & Changes (What)
 Introduced the Official Starter Kit (boilerplate/index.html): Embedded a globally standardized frontend template into the core repository, allowing new participating nations to instantly deploy their own independent, standalone Gates.
