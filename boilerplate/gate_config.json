@@ -1,0 +1,55 @@
+{
+  "$schema": "https://kashika.org/schemas/gate_config.v1.json",
+  "gate_code": "81",
+  "country": "Japan",
+  "repository": "github.com/kashika-protocol/kashika-gate-81",
+  "theme_color": "#00f2fe",
+  "meta_protocol": {
+    "version": "0.6.0",
+    "required_core_version": ">=0.5.0"
+  },
+  "policies": [
+    {
+      "id": "81_prop_2026_vote",
+      "title": "デジタル公的個人認証・市民対話投票インフラの整備案",
+      "difficulty_weight": "High",
+      "note": "歴史的データの1次ソース発掘およびアサーションの難易度が高いため、記述兵（Scribe）への傾斜配分を高めに設定。",
+      "metrics": [
+        {
+          "name": "市民提案プロジェクトの年間採択・執行数",
+          "before": "0 件 (すべて議会一任)",
+          "after": "219 件 (2024年度実績)"
+        }
+      ],
+      "funding_sockets": {
+        "destination_address": "japan-civic-tech-core@getalby.com",
+        "allocation_ratio": {
+          "scribes": 75,
+          "auditors": 15,
+          "architects": 10
+        }
+      }
+    },
+    {
+      "id": "81_land_reform_1946",
+      "title": "自作農創設特別措置法（第二次農地改革）台帳",
+      "difficulty_weight": "Extreme",
+      "note": "GHQ公文書と国内告示の突合・クロスチェック（査読）に狂気的な労力がかかったため、査読兵（Auditor）の比率を引き上げ。",
+      "metrics": [
+        {
+          "name": "解放農地総面積",
+          "before": "0 cho (地主支配構造)",
+          "after": "約 2,000,000 cho (自作農率 90% 超へ)"
+        }
+      ],
+      "funding_sockets": {
+        "destination_address": "japan-history-scribe@opencollective.com",
+        "allocation_ratio": {
+          "scribes": 40,
+          "auditors": 50,
+          "architects": 10
+        }
+      }
+    }
+  ]
+}
