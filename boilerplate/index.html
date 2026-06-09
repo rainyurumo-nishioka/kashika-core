@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KASHIKA // CORE GATE BOILERPLATE</title>
+    <style>
+        :root {
+            --bg-color: #060b13;
+            --panel-bg: rgba(15, 23, 42, 0.8);
+            --border-color: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #475569;
+            --accent-color: #22d3ee; /* 各国の設定ファイルで動的に上書き */
+            --accent-gold: #fbbf24;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: var(--bg-color); color: var(--text-main); font-family: monospace; padding: 30px; }
+        
+        .grid-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(var(--border-color) 1px, transparent 1px), linear-gradient(90deg, var(--border-color) 1px, transparent 1px); background-size: 50px 50px; opacity: 0.1; z-index: -1; }
+        
+        header { border-bottom: 2px solid var(--border-color); padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .gate-badge { background: var(--accent-color); color: #000; font-weight: bold; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        
+        .layout { display: grid; grid-template-columns: 280px 1fr; gap: 30px; }
+        .menu-panel { display: flex; flex-direction: column; gap: 12px; }
+        .node-link { background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 15px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+        .node-link:hover, .node-link.active { border-color: var(--accent-color); background: rgba(34, 211, 238, 0.02); }
+        
+        .main-panel { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; }
+        .fact-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .fact-table th, .fact-table td { text-align: left; padding: 10px; border-bottom: 1px solid var(--border-color); font-size: 13px; }
+        
+        /* ⚡ 共通仕様：経済分配ソケットUI */
+        .p2p-socket-box { background: rgba(251, 191, 36, 0.02); border: 1px dashed rgba(251, 191, 36, 0.3); border-radius: 6px; padding: 15px; margin-top: 25px; }
+        .socket-header { display: flex; justify-content: space-between; align-items: center; color: var(--accent-gold); font-weight: bold; margin-bottom: 8px; }
+        .p2p-btn { background: linear-gradient(135deg, #fbbf24, #d97706); border: none; padding: 4px 12px; border-radius: 4px; color: #000; font-weight: bold; cursor: pointer; font-family: monospace; font-size: 11px; }
+        .p2p-btn:hover { transform: scale(1.02); }
+        
+        .bar-container { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 10px; background: #0f172a; }
+        .b-scribe { background: #22d3ee; }
+        .b-auditor { background: #fbbf24; }
+        .b-architect { background: #c084fc; }
+    </style>
+</head>
+<body>
+
+    <div class="grid-layer"></div>
+
+    <header>
+        <div>
+            <h1 id="gate-title">KASHIKA // CORE GATE TERMINAL</h1>
+            <p id="gate-repo" style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">REPO: loading...</p>
+        </div>
+        <div id="gate-code-badge" class="gate-badge">GATE --</div>
+    </header>
+
+    <div class="layout">
+        <div class="menu-panel" id="menu-wrapper">
+            </div>
+
+        <div class="main-panel">
+            <h2 id="policy-title">政策を選択してください</h2>
+            <p id="policy-desc" style="color: #94a3b8; margin-top: 10px; font-size: 14px; line-height: 1.6;"></p>
+            
+            <table class="fact-table">
+                <thead>
+                    <tr><th>METRIC (検証指標)</th><th>BEFORE</th><th>AFTER (ファクト数値)</th></tr>
+                </thead>
+                <tbody id="fact-body">
+                    <tr><td colspan="3" style="color:var(--text-muted);">No data selected</td></tr>
+                </tbody>
+            </table>
+
+            <div id="socket-injection-area"></div>
+        </div>
+    </div>
+
+    <script>
+        // 国際標準設定ファイルのモック（各国の記述兵がここを自国用に書き換える）
+        const gateConfig = {
+            gate_code: "33",
+            country: "France",
+            repository: "github.com/france-digital-civics/kashika-gate-33",
+            theme_color: "#3b82f6", // フランスブルー
+            policies: [
+                {
+                    id: "33_paris_budget_2024",
+                    title: "パリ市 参加型予算（市民直接投票枠）システム",
+                    desc: "年間投資予算の5%（約1億ユーロ）を市民の直接提案・投票によって執行する構造化ログ。写経完了済み台帳。",
+                    metrics: [
+                        { name: "市民提案プロジェクトの年間採択数", before: "0 件", after: "219 件 (2024年度)" },
+                        { name: "投票参加市民の総数", before: "低迷", after: "超過 100,000 人" }
+                    ],
+                    funding_sockets: {
+                        destination_address: "paris-civic-tech@opencollective.com",
+                        allocation_ratio: { scribes: 70, auditors: 20, architects: 10 }
+                    }
+                }
+            ]
+        };
+
+        // 初期セットアップ
+        function initGate() {
+            // 設定値の動的適用
+            document.documentElement.style.setProperty('--accent-color', gateConfig.theme_color);
+            document.getElementById('gate-title').innerText = `KASHIKA // ${gateConfig.country.toUpperCase()} GATE`;
+            document.getElementById('gate-repo').innerText = `REPO: ${gateConfig.repository}`;
+            document.getElementById('gate-code-badge').innerText = `GATE ${gateConfig.gate_code}`;
+
+            // 左メニュー生成
+            const menuWrapper = document.getElementById('menu-wrapper');
+            menuWrapper.innerHTML = "";
+            gateConfig.policies.forEach((p, idx) => {
+                const item = document.createElement('div');
+                item.className = `node-link ${idx === 0 ? 'active' : ''}`;
+                item.innerText = p.title;
+                item.onclick = () => renderPolicy(p, item);
+                menuWrapper.appendChild(item);
+            });
+
+            // 初期表示
+            if(gateConfig.policies.length > 0) {
+                renderPolicy(gateConfig.policies[0], menuWrapper.firstChild);
+            }
+        }
+
+        // 政策ファクトデータの描画 ＆ 経済ソケットの自動展開
+        function renderPolicy(p, element) {
+            document.querySelectorAll('.node-link').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            document.getElementById('policy-title').innerText = p.title;
+            document.getElementById('policy-desc').innerText = p.desc;
+
+            // テーブル展開
+            const tbody = document.getElementById('fact-body');
+            tbody.innerHTML = "";
+            p.metrics.forEach(m => {
+                tbody.innerHTML += `<tr><td><strong>${m.name}</strong></td><td style="color:#ef4444; text-decoration:line-through;">${m.before}</td><td style="color:var(--accent-color); font-weight:bold;">➔ ${m.after}</td></tr>`;
+            });
+
+            // ⚡ 規格化経済ソケットのインジェクション
+            const socketArea = document.getElementById('socket-injection-area');
+            socketArea.innerHTML = "";
+            if (p.funding_sockets) {
+                const sk = p.funding_sockets;
+                socketArea.innerHTML = `
+                    <div class="p2p-socket-box">
+                        <div class="socket-header">
+                            <span>⚡ FUNDING SOCKET ACTIVE // P2P支援ポート</span>
+                            <button class="p2p-btn" onclick="triggerP2P('${sk.destination_address}')">⚡ DIRECT DONATE</button>
+                        </div>
+                        <div style="font-size:12px; color:#fff;">DEST: ${sk.destination_address}</div>
+                        <div style="display:flex; gap:15px; margin-top:8px; font-size:11px; color:var(--text-muted);">
+                            <span style="color:#22d3ee">Scribes: ${sk.allocation_ratio.scribes}%</span>
+                            <span style="color:#fbbf24">Auditors: ${sk.allocation_ratio.auditors}%</span>
+                            <span style="color:#c084fc">Architects: ${sk.allocation_ratio.architects}%</span>
+                        </div>
+                        <div class="bar-container">
+                            <div class="b-scribe" style="width: ${sk.allocation_ratio.scribes}%"></div>
+                            <div class="b-auditor" style="width: ${sk.allocation_ratio.auditors}%"></div>
+                            <div class="b-architect" style="width: ${sk.allocation_ratio.architects}%"></div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function triggerP2P(address) {
+            alert(`[KASHIKA NETWORK P2P DISPATCH]\n\nConnecting directly to: ${address}\nIntermediary Fees: 0%\nAllocation will be processed according to the node specification logic.`);
+            window.open(`https://ln.meta.com/pay?to=${address}`, '_blank');
+        }
+
+        window.onload = initGate;
+    </script>
+</body>
+</html>
