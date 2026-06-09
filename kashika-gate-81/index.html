@@ -3,385 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KASHIKA (可視化) - Japan Gate 81 Grid Console</title>
+    <title>KASHIKA // Global Task & Request Board</title>
     <style>
         :root {
-            --bg-color: #0b0f19;
-            --panel-bg: rgba(20, 28, 47, 0.7);
-            --accent-modern: #00f2fe;
-            --accent-ghq: #f59e0b;
-            --accent-imperial: #10b981;
-            --accent-conflict: #ef4444;
-            --accent-backup: #a855f7;
-            --text-color: #e2e8f0;
-            --text-muted: #64748b;
+            --bg-color: #060b13;
+            --panel-bg: rgba(15, 23, 42, 0.8);
             --border-color: #1e293b;
-            --current-accent: #00f2fe;
+            --text-color: #f1f5f9;
+            --text-muted: #64748b;
+            
+            /* ロール・緊急度に応じたサイバーカラー */
+            --color-scribe: #38bdf8;
+            --color-auditor: #fbbf24;
+            --color-architect: #a855f7;
+            --color-request: #f43f5e;
+            --color-success: #10b981;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            overflow: hidden;
-            height: 100vh;
+            font-family: 'SF Pro Display', -apple-system, 'Segoe UI', sans-serif;
+            padding: 30px;
+            min-height: 100vh;
         }
 
-        .grid-bg {
-            position: absolute;
-            width: 100%;
-            height: 100%;
+        /* SF風サイバーグリッド背景 */
+        .bg-grid {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-image: linear-gradient(var(--border-color) 1px, transparent 1px), linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
-            background-size: 40px 40px;
-            opacity: 0.15;
-            z-index: 1;
+            background-size: 50px 50px; opacity: 0.1; z-index: -1;
         }
 
-        .app-container {
-            position: relative;
-            z-index: 2;
-            display: grid;
-            grid-template-columns: 290px 1fr;
-            height: 100vh;
-            backdrop-filter: blur(4px);
+        header {
+            margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+        header h1 { font-size: 24px; letter-spacing: 2px; font-weight: 800; background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header p { color: var(--text-muted); font-size: 12px; margin-top: 5px; font-family: monospace; }
+
+        .board-layout {
+            display: grid; grid-template-columns: 360px 1fr; gap: 30px; align-items: start;
         }
 
-        .sidebar {
-            background: rgba(15, 23, 42, 0.9);
-            border-right: 2px solid var(--border-color);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        /* 左側：要請・タスク起票フォーム */
+        .form-panel {
+            background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px;
+            backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
-
-        .logo-area h1 {
-            font-size: 20px;
-            letter-spacing: 2px;
-            background: linear-gradient(45deg, #00f2fe, #4facfe);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .era-strata {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 30px;
-            position: relative;
-        }
-
-        .era-strata::before {
-            content: ''; position: absolute; left: 24px; top: 10px; bottom: 10px; width: 2px; background: var(--border-color); z-index: 0;
-        }
-
-        .era-card {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px 15px 15px 45px;
-            cursor: pointer;
-            position: relative;
-            z-index: 1;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .era-card::before {
-            content: ''; position: absolute; left: 20px; top: 22px; width: 10px; height: 10px; border-radius: 50%; background: var(--text-muted);
-        }
-
-        .era-card.modern.active { border-color: var(--accent-modern); box-shadow: 0 0 15px rgba(0, 242, 254, 0.2); }
-        .era-card.modern.active::before { background: var(--accent-modern); }
-        .era-card.ghq.active { border-color: var(--accent-ghq); box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
-        .era-card.ghq.active::before { background: var(--accent-ghq); }
-        .era-card.imperial.active { border-color: var(--accent-imperial); box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
-        .era-card.imperial.active::before { background: var(--accent-imperial); }
-
-        .era-card h3 { font-size: 13px; margin-bottom: 5px; letter-spacing: 1px; }
-        .era-card p { font-size: 11px; color: var(--text-muted); }
-
-        .main-content { padding: 30px; display: grid; grid-template-rows: auto 1fr; gap: 20px; overflow-y: auto; }
-        .header-status { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
-
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 390px; gap: 20px; }
-        .data-panel { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; position: relative; }
-
-        .chart-container {
-            width: 100%; height: 140px; display: flex; justify-content: center; align-items: center; margin: 20px 0;
-            background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px dashed var(--border-color);
-        }
-
-        .assertion-badge {
-            padding: 10px 20px; border-radius: 6px; font-family: monospace; font-size: 14px; font-weight: bold; letter-spacing: 1px;
-        }
-
-        .rings-container { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 8px; }
-        .tree-rings { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--current-accent); position: relative; }
-        .tree-rings::before { content: ''; width: 66px; height: 66px; border-radius: 50%; border: 2px dashed rgba(255,255,255,0.2); position: absolute; top:15px; left:15px; }
-
-        .badge-tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        .form-panel h2 { font-size: 16px; margin-bottom: 20px; letter-spacing: 1px; color: #38bdf8; font-family: monospace; }
         
-        .parallel-sources { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
-        .source-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 15px; border-radius: 6px; }
-        .source-card h4 { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
-        .source-card p { font-size: 13px; font-family: monospace; line-height: 1.5; }
-
-        /* 海外前例自動バックアップ表示エリア */
-        .backup-ledger-box {
-            background: rgba(168, 85, 247, 0.05); border: 1px solid rgba(168, 85, 247, 0.3);
-            padding: 18px; border-radius: 8px; margin-top: 20px;
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; font-family: monospace; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); border-radius: 6px;
+            padding: 10px; color: var(--text-color); font-size: 14px; transition: all 0.3s;
         }
-        .backup-title { color: #d8b4fe; font-size: 13px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
-        
-        .impact-log-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; font-family: monospace; }
-        .impact-log-table th { color: var(--text-muted); text-align: left; padding: 6px; border-bottom: 1px solid var(--border-color); }
-        .impact-log-table td { padding: 8px 6px; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: #00f2fe; outline: none; box-shadow: 0 0 10px rgba(0,242,254,0.2);
+        }
 
-        .loading-text { font-family: monospace; color: var(--text-muted); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        .submit-btn {
+            width: 100%; background: linear-gradient(135deg, #00f2fe, #4facfe); border: none; padding: 12px;
+            border-radius: 6px; color: #000; font-weight: bold; font-size: 14px; cursor: pointer; transition: all 0.3s;
+        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,242,254,0.4); }
+
+        /* 右側：並列タスクマトリクス */
+        .task-columns {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+        }
+        .column {
+            background: rgba(10, 15, 30, 0.6); border: 1px dashed var(--border-color); border-radius: 12px; padding: 20px; min-height: 600px;
+        }
+        .column-header { font-size: 14px; font-weight: bold; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; font-family: monospace;}
+        
+        /* タスクカード */
+        .task-card {
+            background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px;
+            margin-bottom: 15px; position: relative; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeIn 0.4s ease-out;
+        }
+        .task-card:hover { border-color: #475569; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ロール（カテゴリ）別インジケーター */
+        .card-tag { font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; font-family: monospace; display: inline-block; margin-bottom: 10px; }
+        .tag-scribe { background: rgba(56, 189, 248, 0.15); color: var(--color-scribe); }
+        .tag-auditor { background: rgba(251, 191, 36, 0.15); color: var(--color-auditor); }
+        .tag-architect { background: rgba(168, 85, 247, 0.15); color: var(--color-architect); }
+        .tag-request { background: rgba(244, 63, 94, 0.15); color: var(--color-request); }
+
+        .task-title { font-size: 15px; font-weight: bold; margin-bottom: 6px; line-height: 1.4; }
+        .task-desc { font-size: 13px; color: #94a3b8; line-height: 1.5; margin-bottom: 15px; }
+
+        .card-footer {
+            display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; font-size: 12px;
+        }
+        
+        /* 応援・要請ボタン */
+        .action-btns { display: flex; gap: 10px; }
+        .vote-btn {
+            background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.3); color: #d8b4fe;
+            padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-family: monospace; transition: all 0.2s;
+        }
+        .vote-btn:hover { background: rgba(168, 85, 247, 0.3); color: #fff; }
+
+        .resolve-btn {
+            background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #6ee7b7;
+            padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; transition: all 0.2s;
+        }
+        .resolve-btn:hover { background: var(--color-success); color: #000; font-weight: bold; }
+        
+        .author-info { color: var(--text-muted); font-size: 11px; font-family: monospace; }
     </style>
 </head>
 <body>
 
-    <div class="grid-bg"></div>
+    <div class="bg-grid"></div>
 
-    <div class="app-container">
-        <div class="sidebar">
-            <div class="logo-area">
-                <h1>KASHIKA // 81</h1>
-                <p style="font-size: 10px; color: var(--text-muted);">JAPAN SECTOR FEDERAL LEDGER</p>
+    <header>
+        <div>
+            <h1>KASHIKA // GLOBAL GRID OPERATOR BOARD</h1>
+            <p>プロジェクト未来設計：相互支援・データ要請・完了消し込みパッチシステム</p>
+        </div>
+        <div style="font-family: monospace; font-size: 12px; color: var(--text-muted);" id="live-counter">ACTIVE ISSUES: --</div>
+    </header>
+
+    <div class="board-layout">
+        <div class="form-panel">
+            <h2>[ 新規応援・要請タスクのデプロイ ]</h2>
+            <div class="form-group">
+                <label>起票ロール / 分類</label>
+                <select id="task-role">
+                    <option value="request">🚨 海外へのデータ要請 (GLOBAL REQUEST)</option>
+                    <option value="scribe">📝 記述特化 (SCRIBE: 1次ファクトJSON化)</option>
+                    <option value="auditor">🔍 査読特化 (AUDITOR: 憲法・ソース査読)</option>
+                    <option value="architect">🧠 接続特化 (ARCHITECT: ポインタ格子結合)</option>
+                </select>
             </div>
-            <div class="era-strata">
-                <div class="era-card modern active" onclick="switchEra('modern', this)">
-                    <h3>2000 - PRESENT</h3>
-                    <p>現代：分散型デジタルOS検証期</p>
-                </div>
-                <div class="era-card ghq" onclick="switchEra('ghq', this)">
-                    <h3>1945 - 1952</h3>
-                    <p>占領期：社会OS初期ビルド期</p>
-                </div>
-                <div class="era-card imperial" onclick="switchEra('imperial', this)">
-                    <h3>1895 - 1945</h3>
-                    <p>大日本帝国：外地インフラ拡張期</p>
-                </div>
+            <div class="form-group">
+                <label>タスク / 要請タイトル</label>
+                <input type="text" id="task-title" placeholder="例: 台湾886ゲートから2015年vTaiwanデータを要請したい">
             </div>
+            <div class="form-group">
+                <label>詳細・仕様・1次ソースのURLなど</label>
+                <textarea id="task-desc" rows="4" placeholder="具体的な仕様、または『ここを誰か手伝ってくれ！』という応援要請文。"></textarea>
+            </div>
+            <div class="form-group">
+                <label>コントリビューター名 (GitHub IDなど)</label>
+                <input type="text" id="task-author" placeholder="rainyurumo-nishioka">
+            </div>
+            <button class="submit-btn" onclick="createTask()">グリッドへパッチを当てる (SUBMIT)</button>
         </div>
 
-        <div class="main-content">
-            <div class="header-status">
-                <div>
-                    <h2 id="current-era-title">現代セクター</h2>
-                    <p id="era-description" style="font-size: 12px; color: var(--text-muted);">格子状にマッピングされた構造化ログのリアルタイムアサーション</p>
+        <div class="task-columns">
+            <div class="column">
+                <div class="column-header">
+                    <span style="color: #ef4444;">📡 稼働中の要請・応援待ち (ACTIVE GRID)</span>
+                    <span id="active-count" style="background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:4px;">0</span>
                 </div>
-                <span id="global-matrix-badge" class="badge-tag">MATRIX ACTIVE</span>
+                <div id="active-tasks-container"></div>
             </div>
 
-            <div class="dashboard-grid">
-                <div class="data-panel">
-                    <h2 id="policy-title" style="transition: color 0.3s;">Loading...</h2>
-                    <p id="policy-summary" style="margin-top: 10px; font-size: 14px; color: #94a3b8; line-height: 1.6;"></p>
-
-                    <div class="chart-container">
-                        <div id="assertion-badge-element" class="assertion-badge">ENGINE INITIALIZING</div>
-                    </div>
-
-                    <h3 style="font-size: 12px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase;">[ 1次ファクト台帳・クロスゲート接続 ]</h3>
-                    <div class="parallel-sources" id="sources-wrapper"></div>
-
-                    <div id="cross-gate-backup-area"></div>
+            <div class="column" style="background: rgba(0,0,0,0.2);">
+                <div class="column-header">
+                    <span style="color: var(--color-success);">✅ 完了・格子マージ済 (MERGED ARCHIVE)</span>
+                    <span id="merged-count" style="background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:4px;">0</span>
                 </div>
-
-                <div class="data-panel" style="display: flex; flex-direction: column; gap: 20px;">
-                    <div>
-                        <h3 style="font-size: 12px; margin-bottom: 12px; color: var(--text-muted); text-transform: uppercase;">[ 並列貢献ロール認証 ]</h3>
-                        <div class="rings-container">
-                            <div class="tree-rings" id="tree-rings-visual"></div>
-                            <p style="font-size: 13px; font-weight: bold;" id="meta-contributor">---</p>
-                            <p style="font-size: 11px; color: var(--text-muted);" id="meta-role-badge">---</p>
-                        </div>
-                    </div>
-
-                    <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
-                        <h4 style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase;">[ コア接続ポインタメタデータ ]</h4>
-                        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 6px; font-family: monospace; font-size: 11px; line-height: 1.6; color: #38bdf8;" id="meta-pointers">
-                        </div>
-                    </div>
-                </div>
+                <div id="merged-tasks-container"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // 国際電話国番号「886(台湾)」など、海外勢がスターターキットに基づいてコミットしたリアルなJSONデータ構造を、
-        // システム（フロントエンド）側で動的にFetch・パースして結合するシミュレーションマップ。
-        const localRegistry = {
-            modern: {
-                title: "現代セクター (2000_present_modern)",
-                color: "#00f2fe",
-                policy: "デジタル公的個人認証・市民投票インフラの整備案",
-                summary: "2026年度仕様変更案。感情的な反発を回避するため、先行する海外ゲートのデータ構造をアサーション（突合）し、バグ（不具合・運用コスト）の事前検知を行うバックアップ対象政策。",
-                assertion: { text: "⚡ CROSS-GATE BINDING: AUTONOMOUS BACKUP (海外前例による構造支援あり)", type: "backup" },
-                sources: [
-                    { gate: "kashika-gate-81 (日本国案)", log: "ID: 81_prop_2026_vote<br>STATUS: PROPOSED<br>BUDGET: 12,000,000 USD" }
-                ],
-                // 🧠 ARCHITECTがマッピングした海外ゲートのポインタ（Fetchエミュレーション情報）
-                crossGateFetchPointer: {
-                    gate_code: "886",
-                    country_name: "Taiwan",
-                    source_url: "https://github.com/rainyurumo-nishioka/kashika-gate-886", // 台湾リポジトリの想定
-                    file_path: "eras/1996_digital_democracy/policies/886_g0v_vtaiwan.json",
-                    // 吸い込んできた生データ
-                    fetched_data: {
-                        "policy_id": "886_vtaiwan_2015",
-                        "title": "vTaiwan（デジタル市民対話プラットフォーム）の法整備",
-                        "status": "implemented",
-                        "facts": { "execution_year": 2015, "budget_allocated_usd": 0, "tags": ["Digital Democracy", "Civic Tech"] },
-                        "impact_logs": [
-                            { "metric": "Uber進出に伴う法改正の合意形成期間", "before": "不透明・長期化", "after": "4週間でステークホルダー間の合意形成を完了" },
-                            { "metric": "市民提案の政策反映率", "before": "5%未満", "after": "80%以上の合意案が閣議へ上程" }
-                        ]
-                    }
-                },
-                contributor: "東大阪シビックテック結社",
-                role: "🛡️ AUDITOR / 相互マージ査読: 42回完了",
-                pointers: "POINTER_1: kashika-gate-81/eras/2000_present_modern/policies/81_digital_infra.json<br>POINTER_2: kashika-gate-886/eras/1996_digital_democracy/policies/886_g0v_vtaiwan.json"
+        // 未来設計ロードマップに基づく初期コアタスク
+        let initialTasks = [
+            {
+                id: 1, role: "scribe", title: "【タスクA】GHQ占領期セクターのリアル農地改革データの削り出し",
+                desc: "農林省告示第104号の、実際の再分配面積「2,000,000町歩」に関する1次ソース（国会図書館デジタルコレクション）のURLをJSONに埋め込む作業のヘルプ要請！",
+                author: "rainyurumo-nishioka", votes: 8, status: "active"
             },
-            ghq: {
-                title: "占領政策セクター (1945_1952_ghq)",
-                color: "#f59e0b",
-                policy: "自作農創設特別措置法（第二次農地改革）",
-                summary: "寄生地主制の解体、および耕作農民への土地所有権強制再分配プログラム。大元リポジトリ（kashika-core）でマッピングされた米国公文書館の記録と100%一致。",
-                assertion: { text: "✅ CORRELATION: MATCHED (コアマスターデータと100%一致)", type: "matched" },
-                sources: [
-                    { gate: "kashika-gate-81 (農林省告示第104号)", log: "REFACTORED_LAND: 2,000,000 CHO<br>STATUS: FULLY_EXECUTED" },
-                    { gate: "kashika-core (米国国立公文書館 NARA)", value: "SCAP_DIRECTIVE: SIGNED / MATCHED" }
-                ],
-                crossGateFetchPointer: null,
-                contributor: "KASHIKA歴史データ写経班",
-                role: "📝 SCRIBE / 1次資料JSON構造化: 154件",
-                pointers: "POINTER_1: kashika-gate-81/eras/1945_1952_ghq/policies/81_constitution.json<br>POINTER_2: kashika-core/registry.json"
+            {
+                id: 2, role: "request", title: "【タスクA】エストニア（国番号372）のi-Voting実績データの提供要請",
+                desc: "2005年のi-Voting導入に伴う「投票コスト削減率」の1次統計データデータ構造を持っている海外ギーク、誰かkashika-gate-372を作ってマージしてくれ！",
+                author: "Architect-Core", votes: 14, status: "active"
             },
-            imperial: {
-                title: "大日本帝国・外地セクター (1895_1945_imperial)",
-                color: "#10b981",
-                policy: "1935年 満州鉄道拡張都市インフラ投資計画",
-                summary: "当時の日本の国家予算（大蔵省仕様）と、現地に残された財務台帳（受入ログ）のアサーション。数値に重大な食い違い（データの衝突）が検知されています。",
-                assertion: { text: "⚠️ ASSERTION FAILED: CONFLICT DETECTED (データ構造の矛盾)", type: "conflict" },
-                sources: [
-                    { gate: "kashika-gate-81 (大蔵省昭和財政史)", log: "VALUE: 50,000,000 JPY<br>FIELD: 出資総額記録" },
-                    { gate: "kashika-gate-X (現地側接収財務記録)", log: "VALUE: 35,000,000 JPY<br>FIELD: 現地受入総額記録" }
-                ],
-                crossGateFetchPointer: null,
-                contributor: "ARCHITECT (データグリッド接続班)",
-                role: "🧠 ARCHITECT / クロス参照ポインタ結合: 12件",
-                pointers: "POINTER_1: kashika-gate-81/eras/1895_1945_imperial_era/policies/81_southern_military.json<br>POINTER_2: kashika-gate-X/policies/captured_ledger.json"
+            {
+                id: 3, role: "architect", title: "【タスクC】マージエンジンのMockから実Fetch APIへの換装",
+                desc: "現在index.html内部のローカルオブジェクトで処理している他国JSONの結合ロジックを、本物のGitHub raw URLからfetchするコードへリファクタリングする案件。",
+                author: "rainyurumo-nishioka", votes: 5, status: "active"
             }
-        };
+        ];
 
-        function switchEra(eraKey, element) {
-            document.querySelectorAll('.era-card').forEach(card => card.classList.remove('active'));
-            element.classList.add('active');
+        // ローカルストレージ（ブラウザ保存）からデータを復元、無ければ初期タスクを使用
+        let tasks = JSON.parse(localStorage.getItem('kashika_tasks')) || initialTasks;
 
-            const eraData = localRegistry[eraKey];
-            document.documentElement.style.setProperty('--current-accent', eraData.color);
+        function renderBoard() {
+            const activeContainer = document.getElementById('active-tasks-container');
+            const mergedContainer = document.getElementById('merged-tasks-container');
             
-            // 基本情報の更新
-            document.getElementById('current-era-title').innerText = eraData.title;
-            document.getElementById('policy-title').innerText = eraData.policy;
-            document.getElementById('policy-title').style.color = eraData.assertion.type === 'conflict' ? "var(--accent-conflict)" : "var(--current-accent)";
-            document.getElementById('policy-summary').innerText = eraData.summary;
-            document.getElementById('meta-contributor').innerText = eraData.contributor;
-            document.getElementById('meta-role-badge').innerText = eraData.role;
-            document.getElementById('meta-pointers').innerHTML = eraData.pointers;
+            activeContainer.innerHTML = "";
+            mergedContainer.innerHTML = "";
 
-            // アサーションバッジのデザイン動的変更
-            const badge = document.getElementById('assertion-badge-element');
-            badge.innerText = eraData.assertion.text;
-            if (eraData.assertion.type === 'conflict') {
-                badge.style.background = "rgba(239, 68, 68, 0.15)";
-                badge.style.border = "1px solid var(--accent-conflict)";
-                badge.style.color = "#fca5a5";
-                document.getElementById('global-matrix-badge').innerText = "CONFLICT WARNING";
-                document.getElementById('global-matrix-badge').style.background = "var(--accent-conflict)";
-            } else if (eraData.assertion.type === 'backup') {
-                badge.style.background = "rgba(168, 85, 247, 0.15)";
-                badge.style.border = "1px solid var(--accent-backup)";
-                badge.style.color = "#e9d5ff";
-                document.getElementById('global-matrix-badge').innerText = "MATRIX BINDING";
-                document.getElementById('global-matrix-badge').style.background = "var(--accent-backup)";
-            } else {
-                badge.style.background = "rgba(0, 242, 254, 0.1)";
-                badge.style.border = "1px solid var(--accent-modern)";
-                badge.style.color = "var(--accent-modern)";
-                document.getElementById('global-matrix-badge').innerText = "MATRIX ACTIVE";
-                document.getElementById('global-matrix-badge').style.background = "var(--accent-modern)";
-            }
+            let activeCount = 0;
+            let mergedCount = 0;
 
-            // 1次ファクト台帳カードの生成
-            const wrapper = document.getElementById('sources-wrapper');
-            wrapper.innerHTML = "";
-            eraData.sources.forEach(src => {
+            tasks.forEach(task => {
                 const card = document.createElement('div');
-                card.className = "source-card";
-                card.style.borderLeft = `3px solid ${eraData.assertion.type === 'conflict' ? 'var(--accent-conflict)' : 'var(--current-accent)'}`;
-                card.innerHTML = `<h4>${src.gate}</h4><p>${src.log}</p>`;
-                wrapper.appendChild(card);
+                card.className = "task-card";
+                
+                // ロール別タグのクラス判定
+                let tagClass = `tag-${task.role}`;
+                let tagLabel = task.role === 'request' ? '🚨 REQUEST' : `🧬 ${task.role}`;
+
+                let footerContent = "";
+                if (task.status === 'active') {
+                    activeCount++;
+                    footerContent = `
+                        <div class="author-info">by @${task.author}</div>
+                        <div class="action-btns">
+                            <button class="vote-btn" onclick="voteTask(${task.id})">🔥 応援 (${task.votes})</button>
+                            <button class="resolve-btn" onclick="resolveTask(${task.id})">完了・消去</button>
+                        </div>
+                    `;
+                } else {
+                    mergedCount++;
+                    card.style.opacity = "0.4";
+                    card.style.borderStyle = "dashed";
+                    footerContent = `
+                        <div class="author-info" style="color:var(--color-success)">✓ GRID MERGED</div>
+                        <div style="font-size:11px; color:var(--text-muted); font-family:monospace;">Votes: ${task.votes}</div>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <span class="card-tag ${tagClass}">${tagLabel}</span>
+                    <div class="task-title">${task.title}</div>
+                    <div class="task-desc">${task.desc}</div>
+                    <div class="card-footer">
+                        ${footerContent}
+                    </div>
+                `;
+
+                if (task.status === 'active') {
+                    activeContainer.appendChild(card);
+                } else {
+                    mergedContainer.appendChild(card);
+                }
             });
 
-            // 【マージエンジンコア】海外のポインタデータが存在する場合、そのJSON構造をリアルタイム逆コンパイルしてレンダリング
-            const backupArea = document.getElementById('cross-gate-backup-area');
-            backupArea.innerHTML = "";
+            // 各種カウンターの同期
+            document.getElementById('active-count').innerText = activeCount;
+            document.getElementById('merged-count').innerText = mergedCount;
+            document.getElementById('live-counter').innerText = `ACTIVE ISSUES: ${activeCount}`;
+            
+            // 状態をローカルストレージへ保存
+            localStorage.setItem('kashika_tasks', JSON.stringify(tasks));
+        }
 
-            if (eraData.crossGateFetchPointer) {
-                const pointer = eraData.crossGateFetchPointer;
-                const fetched = pointer.fetched_data;
+        // タスク起票ロジック
+        function createTask() {
+            const role = document.getElementById('task-role').value;
+            const title = document.getElementById('task-title').value.trim();
+            const desc = document.getElementById('task-desc').value.trim();
+            const author = document.getElementById('task-author').value.trim() || "anonymous";
 
-                const backupBox = document.createElement('div');
-                backupBox.className = "backup-ledger-box";
-                
-                // 引き込んできた海外データの前例エビデンスを動的に組み立てる
-                let tableRows = "";
-                fetched.impact_logs.forEach(log => {
-                    tableRows += `
-                        <tr>
-                            <td>${log.metric}</td>
-                            <td style="color:#ef4444; text-decoration:line-through;">${log.before}</td>
-                            <td style="color:#10b981; font-weight:bold;">➔ ${log.after}</td>
-                        </tr>
-                    `;
-                });
+            if (!title || !desc) {
+                alert("要請タイトルおよび詳細を入力してください。");
+                return;
+            }
 
-                backupBox.innerHTML = `
-                    <div class="backup-title">
-                        <span>🔮</span> 海外ゲート自動結合 [Gate ${pointer.gate_code}: ${pointer.country_name}] からの実績ログ
-                    </div>
-                    <p style="font-size:12px; color:#c084fc; font-family:monospace; margin-bottom:10px;">
-                        FETCH_PATH: ${pointer.file_path}<br>
-                        TARGET_POLICY: ${fetched.title} (${fetched.status.toUpperCase()})
-                    </p>
-                    <table class="impact-log-table">
-                        <thead>
-                            <tr>
-                                <th>検証指標 (Metric)</th>
-                                <th>導入前 (Before)</th>
-                                <th>導入後の実績 (After Fact)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${tableRows}
-                        </tbody>
-                    </table>
-                    <p style="font-size:11px; color:var(--text-muted); margin-top:12px; text-align:right;">
-                        ※この海外ゲートの実績数値ログが、国内政策の「仕様の安全パイプライン」をデータ主導でバックアップしています。
-                    </p>
-                `;
-                backupArea.appendChild(backupBox);
+            const newTask = {
+                id: Date.now(),
+                role: role,
+                title: title,
+                desc: desc,
+                author: author,
+                votes: 0,
+                status: "active"
+            };
+
+            tasks.unshift(newTask);
+            renderBoard();
+
+            // フォームのクリア
+            document.getElementById('task-title').value = "";
+            document.getElementById('task-desc').value = "";
+            document.getElementById('task-author').value = "";
+        }
+
+        // 応援（投票）ボタンのインクリメント
+        function voteTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.votes++;
+                renderBoard();
             }
         }
 
+        // タスクの完了消し込み（マージ）
+        function resolveTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.status = "merged";
+                renderBoard();
+            }
+        }
+
+        // 初回レンダリング
         window.onload = function() {
-            switchEra('modern', document.querySelector('.era-card.modern'));
+            renderBoard();
         };
     </script>
 </body>
