@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KASHIKA (可視化) - Global Open Policy Ledger</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: rgba(20, 28, 47, 0.7);
+            --accent-modern: #00f2fe;
+            --accent-ghq: #f59e0b;
+            --text-color: #e2e8f0;
+            --text-muted: #64748b;
+            --border-color: #1e293b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* アニメ的なSFグリッド背景 */
+        .grid-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(var(--border-color) 1px, transparent 1px), linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.15;
+            z-index: 1;
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            height: 100vh;
+            backdrop-filter: blur(4px);
+        }
+
+        /* 左側：歴史の地層タイムライン（Era） */
+        .sidebar {
+            background: rgba(15, 23, 42, 0.85);
+            border-right: 2px solid var(--border-color);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .logo-area h1 {
+            font-size: 20px;
+            letter-spacing: 2px;
+            background: linear-gradient(45deg, #00f2fe, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .era-strata {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+            position: relative;
+        }
+
+        /* 地層を表現する縦線 */
+        .era-strata::before {
+            content: '';
+            position: absolute;
+            left: 24px;
+            top: 10px;
+            bottom: 10px;
+            width: 2px;
+            background: var(--border-color);
+            z-index: 0;
+        }
+
+        .era-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px 15px 15px 45px;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .era-card::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 22px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        /* 現代のアクティブ状態 */
+        .era-card.modern.active {
+            border-color: var(--accent-modern);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+            transform: translateX(5px);
+        }
+        .era-card.modern.active::before { background: var(--accent-modern); }
+
+        /* GHQ占領期のアクティブ状態 */
+        .era-card.ghq.active {
+            border-color: var(--accent-ghq);
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+            transform: translateX(5px);
+        }
+        .era-card.ghq.active::before { background: var(--accent-ghq); }
+
+        .era-card h3 { font-size: 14px; margin-bottom: 5px; }
+        .era-card p { font-size: 11px; color: var(--text-muted); }
+
+        /* 右側：メインコンテンツ表示領域 */
+        .main-content {
+            padding: 30px;
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .header-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+
+        /* 政策カード・ビジュアルパネル */
+        .data-panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+            transition: border-color 0.5s;
+        }
+
+        /* 擬似レーダーチャート（CSSアート） */
+        .chart-container {
+            width: 100%;
+            height: 180px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border: 1px dashed var(--border-color);
+        }
+
+        .mock-radar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2px solid;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+
+        /* 年輪（実績SBT）インジケーター */
+        .rings-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
+        .tree-rings {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #1e293b;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        .tree-rings::before {
+            content: '';
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid #334155;
+            position: absolute;
+        }
+        .tree-rings::after {
+            content: '';
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #475569;
+            position: absolute;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.8; }
+            50% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.8; }
+        }
+
+        .badge-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        /* ログの流動的なアニメ風フォント */
+        .log-text {
+            font-family: monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #a7f3d0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="grid-bg"></div>
+
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="logo-area">
+                <h1>KASHIKA // 81</h1>
+                <p style="font-size: 10px; color: var(--text-muted);">FEDERATED LEDGER SYSTEM</p>
+            </div>
+
+            <div class="era-strata">
+                <div class="era-card modern active" onclick="switchEra('modern', this)">
+                    <h3>2000 - PRESENT</h3>
+                    <p>現代：デジタルOSと資金透明化期</p>
+                </div>
+                <div class="era-card ghq" onclick="switchEra('ghq', this)">
+                    <h3>1945 - 1952</h3>
+                    <p>初期：GHQ占領政策・憲法ビルド期</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="header-status">
+                <div>
+                    <h2 id="current-era-title">現代セクター (2000_present_modern)</h2>
+                    <p style="font-size: 12px; color: var(--text-muted);">格子状に配置された政策構造ログのレンダリング</p>
+                </div>
+                <span id="era-badge" class="badge-tag" style="background: rgba(0, 242, 254, 0.2); color: var(--accent-modern);">Active Mode</span>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="data-panel" id="policy-panel">
+                    <h2 id="policy-title" style="color: var(--accent-modern);">デジタル公的個人認証口座紐付け案</h2>
+                    <p id="policy-summary" style="margin-top: 10px; font-size: 14px; line-height: 1.6;">
+                        行政手続きの高速化と給付金の誤支給防止を目的とした、全市民の口座データ構造化インフラ整備。
+                    </p>
+
+                    <h3 style="margin-top: 30px; font-size: 14px; color: var(--text-muted);">[成分分析レーダー]</h3>
+                    <div class="chart-container">
+                        <div class="mock-radar" id="radar-visual" style="border-color: var(--accent-modern);"></div>
+                    </div>
+
+                    <h3 style="margin-top: 20px; font-size: 14px; color: var(--text-muted);">[検証されたファクトログ]</h3>
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 6px; margin-top: 10px;">
+                        <p class="log-text" id="log-content">★ 審議時間合計42時間。システム連携時におけるレガシー銀行システム側の負荷テストが課題として浮上。</p>
+                    </div>
+                </div>
+
+                <div class="data-panel" style="display: flex; flex-direction: column; gap: 20px;">
+                    <div>
+                        <h3 style="font-size: 14px; margin-bottom: 15px;">担当査読団体の実績（SBT）</h3>
+                        <div class="rings-container">
+                            <div class="tree-rings" id="tree-rings-visual" style="border-color: var(--accent-modern);"></div>
+                            <p style="font-size: 13px; font-weight: bold;" id="reviewer-name">東大阪シビックテック結社</p>
+                            <p style="font-size: 11px; color: var(--text-muted);">SBTマージ実績: 42回合格</p>
+                        </div>
+                    </div>
+
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 15px;">
+                        <h4 style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">世界ポインタ（グローバル参照）</h4>
+                        <p style="font-size: 12px; line-height: 1.4;" id="global-ref-text">
+                            🔍 <strong>国番号 91 (インド)</strong>: 「アーダール」の失敗事例を参照中（高齢者認証エラーのバグ報告と結合）。
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const data = {
+            modern: {
+                title: "現代セクター (2000_present_modern)",
+                badgeColor: "rgba(0, 242, 254, 0.2)",
+                accentColor: "#00f2fe",
+                policyTitle: "デジタル公的個人認証口座紐付け案",
+                summary: "行政手続きの高速化と給付金の誤支給防止を目的とした、全市民の口座データ構造化インフラ整備。レガシーな銀行APIのオープン化を加速させるパッチ政策。",
+                log: "★ 審議時間合計42時間。システム連携時におけるレガシー銀行システム側の負荷テストが課題として浮上。コードベースはクリーン。",
+                reviewer: "東大阪シビックテック結社",
+                globalRef: "🔍 <strong>国番号 91 (インド)</strong>: 「アーダール」の失敗事例を参照中（高齢者認証エラーのバグ報告と結合）。"
+            },
+            ghq: {
+                title: "占領政策セクター (1945_1952_ghq)",
+                badgeColor: "rgba(245, 158, 11, 0.2)",
+                accentColor: "#f59e0b",
+                policyTitle: "自作農創設特別措置法（第二次農地改革）",
+                summary: "寄生地主制を打破し、実際に耕作を行う農民へ土地の所有権を強制的に再分配する、日本社会の経済OS初期ビルドプログラム。GHQの強力なトップダウン指令に基づく。",
+                log: "★ ファクトログ：1946年10月公布。約200万町歩の地主地が買収され、小作地の大半が自作地へとリファクタリング完了。経済の民主化を強制執行。",
+                reviewer: "KASHIKA歴史データ検証班 (SBT-Level 5)",
+                globalRef: "🔍 <strong>国番号 1 (アメリカ)</strong>: 国立公文書館(NARA)所蔵の「GHQ/SCAP文書」の一次ソースポインタを直接参照中。"
+            }
+        };
+
+        function switchEra(eraKey, element) {
+            // アクティブなクラスの付け替え
+            document.querySelectorAll('.era-card').forEach(card => card.classList.remove('active'));
+            element.classList.add('active');
+
+            const eraData = data[eraKey];
+            
+            // テキストのドラマチックな書き換え
+            document.getElementById('current-era-title').innerText = eraData.title;
+            
+            const badge = document.getElementById('era-badge');
+            badge.style.background = eraData.badgeColor;
+            badge.style.color = eraData.accentColor;
+
+            const pTitle = document.getElementById('policy-title');
+            pTitle.innerText = eraData.policyTitle;
+            pTitle.style.color = eraData.accentColor;
+
+            document.getElementById('policy-summary').innerText = eraData.summary;
+            document.getElementById('log-content').innerText = eraData.log;
+            document.getElementById('reviewer-name').innerText = eraData.reviewer;
+            document.getElementById('global-ref-text').innerHTML = eraData.globalRef;
+
+            // ビジュアルコンポーネントの色（格子）を動的に同期
+            document.getElementById('radar-visual').style.borderColor = eraData.accentColor;
+            document.getElementById('tree-rings-visual').style.borderColor = eraData.accentColor;
+        }
+    </script>
+</body>
+</html>
