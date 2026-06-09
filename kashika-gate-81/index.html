@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KASHIKA (可視化) - Japan Gate 81</title>
+    <title>KASHIKA (可視化) - Japan Gate 81 Grid Console</title>
     <style>
         :root {
             --bg-color: #0b0f19;
@@ -12,6 +12,7 @@
             --accent-ghq: #f59e0b;
             --accent-imperial: #10b981;
             --accent-conflict: #ef4444;
+            --accent-backup: #a855f7;
             --text-color: #e2e8f0;
             --text-muted: #64748b;
             --border-color: #1e293b;
@@ -25,10 +26,8 @@
             font-family: 'Helvetica Neue', Arial, sans-serif;
             overflow: hidden;
             height: 100vh;
-            transition: background 0.5s;
         }
 
-        /* アニメ的なSFグリッド背景 */
         .grid-bg {
             position: absolute;
             width: 100%;
@@ -48,7 +47,6 @@
             backdrop-filter: blur(4px);
         }
 
-        /* 左側：歴史の地層タイムライン（Era） */
         .sidebar {
             background: rgba(15, 23, 42, 0.9);
             border-right: 2px solid var(--border-color);
@@ -64,7 +62,6 @@
             background: linear-gradient(45deg, #00f2fe, #4facfe);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            transition: all 0.5s;
         }
 
         .era-strata {
@@ -76,14 +73,7 @@
         }
 
         .era-strata::before {
-            content: '';
-            position: absolute;
-            left: 24px;
-            top: 10px;
-            bottom: 10px;
-            width: 2px;
-            background: var(--border-color);
-            z-index: 0;
+            content: ''; position: absolute; left: 24px; top: 10px; bottom: 10px; width: 2px; background: var(--border-color); z-index: 0;
         }
 
         .era-card {
@@ -98,167 +88,58 @@
         }
 
         .era-card::before {
-            content: '';
-            position: absolute;
-            left: 20px;
-            top: 22px;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--text-muted);
-            transition: all 0.3s;
+            content: ''; position: absolute; left: 20px; top: 22px; width: 10px; height: 10px; border-radius: 50%; background: var(--text-muted);
         }
 
-        /* 各時代のアクティブ状態の定義 */
-        .era-card.modern.active { border-color: var(--accent-modern); box-shadow: 0 0 15px rgba(0, 242, 254, 0.2); transform: translateX(5px); }
+        .era-card.modern.active { border-color: var(--accent-modern); box-shadow: 0 0 15px rgba(0, 242, 254, 0.2); }
         .era-card.modern.active::before { background: var(--accent-modern); }
-
-        .era-card.ghq.active { border-color: var(--accent-ghq); box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); transform: translateX(5px); }
+        .era-card.ghq.active { border-color: var(--accent-ghq); box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
         .era-card.ghq.active::before { background: var(--accent-ghq); }
-
-        .era-card.imperial.active { border-color: var(--accent-imperial); box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); transform: translateX(5px); }
+        .era-card.imperial.active { border-color: var(--accent-imperial); box-shadow: 0 0 15px rgba(16, 185, 129, 0.2); }
         .era-card.imperial.active::before { background: var(--accent-imperial); }
 
         .era-card h3 { font-size: 13px; margin-bottom: 5px; letter-spacing: 1px; }
         .era-card p { font-size: 11px; color: var(--text-muted); }
 
-        /* 右側：メインコンテンツ表示領域 */
-        .main-content {
-            padding: 30px;
-            display: grid;
-            grid-template-rows: auto 1fr;
-            gap: 20px;
-            overflow-y: auto;
-        }
+        .main-content { padding: 30px; display: grid; grid-template-rows: auto 1fr; gap: 20px; overflow-y: auto; }
+        .header-status { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; }
 
-        .header-status {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
-        }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 390px; gap: 20px; }
+        .data-panel { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; position: relative; }
 
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 20px;
-        }
-
-        .data-panel {
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 25px;
-            position: relative;
-            transition: border-color 0.5s;
-        }
-
-        /* 擬似レーダー・コンフリクトインジケーター */
         .chart-container {
-            width: 100%;
-            height: 160px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 20px 0;
-            background: rgba(0,0,0,0.3);
-            border-radius: 8px;
-            border: 1px dashed var(--border-color);
-            position: relative;
+            width: 100%; height: 140px; display: flex; justify-content: center; align-items: center; margin: 20px 0;
+            background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px dashed var(--border-color);
         }
 
-        .conflict-badge {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid var(--accent-conflict);
-            color: #fca5a5;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-family: monospace;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            animation: blink 2s infinite;
+        .assertion-badge {
+            padding: 10px 20px; border-radius: 6px; font-family: monospace; font-size: 14px; font-weight: bold; letter-spacing: 1px;
         }
 
-        @keyframes blink {
-            0%, 100% { opacity: 1; border-color: var(--accent-conflict); box-shadow: 0 0 10px rgba(239,68,68,0.3); }
-            50% { opacity: 0.7; border-color: transparent; box-shadow: none; }
-        }
+        .rings-container { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 20px; background: rgba(0,0,0,0.2); border-radius: 8px; }
+        .tree-rings { width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--current-accent); position: relative; }
+        .tree-rings::before { content: ''; width: 66px; height: 66px; border-radius: 50%; border: 2px dashed rgba(255,255,255,0.2); position: absolute; top:15px; left:15px; }
 
-        /* 年輪（実績SBT）インジケーター */
-        .rings-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            padding: 20px;
-            background: rgba(0,0,0,0.2);
-            border-radius: 8px;
-        }
+        .badge-tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; }
+        
+        .parallel-sources { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        .source-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 15px; border-radius: 6px; }
+        .source-card h4 { font-size: 11px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        .source-card p { font-size: 13px; font-family: monospace; line-height: 1.5; }
 
-        .tree-rings {
-            width: 110px;
-            height: 110px;
-            border-radius: 50%;
-            border: 4px solid var(--border-color);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            transition: border-color 0.5s;
+        /* 海外前例自動バックアップ表示エリア */
+        .backup-ledger-box {
+            background: rgba(168, 85, 247, 0.05); border: 1px solid rgba(168, 85, 247, 0.3);
+            padding: 18px; border-radius: 8px; margin-top: 20px;
         }
-        .tree-rings::before {
-            content: ''; width: 75px; height: 75px; border-radius: 50%;
-            border: 3px solid rgba(100,116,139,0.3); position: absolute;
-        }
-        .tree-rings::after {
-            content: ''; width: 40px; height: 40px; border-radius: 50%;
-            border: 2px solid rgba(100,116,139,0.5); position: absolute;
-        }
+        .backup-title { color: #d8b4fe; font-size: 13px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        
+        .impact-log-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; font-family: monospace; }
+        .impact-log-table th { color: var(--text-muted); text-align: left; padding: 6px; border-bottom: 1px solid var(--border-color); }
+        .impact-log-table td { padding: 8px 6px; border-bottom: 1px solid rgba(255,255,255,0.03); }
 
-        .badge-tag {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-            transition: all 0.5s;
-        }
-
-        .log-box {
-            background: rgba(0,0,0,0.4);
-            padding: 15px;
-            border-radius: 6px;
-            margin-top: 10px;
-            border-left: 3px solid var(--current-accent);
-            transition: border-color 0.5s;
-        }
-
-        .log-text {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        .parallel-sources {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .source-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border-color);
-            padding: 12px;
-            border-radius: 6px;
-        }
-
-        .source-card h4 { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
-        .source-card p { font-size: 13px; font-family: monospace; }
+        .loading-text { font-family: monospace; color: var(--text-muted); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -268,22 +149,21 @@
     <div class="app-container">
         <div class="sidebar">
             <div class="logo-area">
-                <h1 id="main-logo">KASHIKA // 81</h1>
-                <p style="font-size: 10px; color: var(--text-muted);">JAPAN GATEWAY LEDGER</p>
+                <h1>KASHIKA // 81</h1>
+                <p style="font-size: 10px; color: var(--text-muted);">JAPAN SECTOR FEDERAL LEDGER</p>
             </div>
-
             <div class="era-strata">
                 <div class="era-card modern active" onclick="switchEra('modern', this)">
                     <h3>2000 - PRESENT</h3>
-                    <p>現代：デジタルOSと資金透明化期</p>
+                    <p>現代：分散型デジタルOS検証期</p>
                 </div>
                 <div class="era-card ghq" onclick="switchEra('ghq', this)">
                     <h3>1945 - 1952</h3>
-                    <p>初期：GHQ占領政策・憲法ビルド期</p>
+                    <p>占領期：社会OS初期ビルド期</p>
                 </div>
                 <div class="era-card imperial" onclick="switchEra('imperial', this)">
                     <h3>1895 - 1945</h3>
-                    <p>拡張：大日本帝国・外地インフラ期</p>
+                    <p>大日本帝国：外地インフラ拡張期</p>
                 </div>
             </div>
         </div>
@@ -291,47 +171,40 @@
         <div class="main-content">
             <div class="header-status">
                 <div>
-                    <h2 id="current-era-title">現代セクター (2000_present_modern)</h2>
-                    <p style="font-size: 12px; color: var(--text-muted);">格子状に配置された政策構造ログのアサーション（整合性検証）</p>
+                    <h2 id="current-era-title">現代セクター</h2>
+                    <p id="era-description" style="font-size: 12px; color: var(--text-muted);">格子状にマッピングされた構造化ログのリアルタイムアサーション</p>
                 </div>
-                <span id="era-badge" class="badge-tag" style="background: rgba(0, 242, 254, 0.2); color: var(--accent-modern);">GRID CONSISTENT</span>
+                <span id="global-matrix-badge" class="badge-tag">MATRIX ACTIVE</span>
             </div>
 
             <div class="dashboard-grid">
-                <div class="data-panel" id="policy-panel">
-                    <h2 id="policy-title" style="color: var(--accent-modern); transition: color 0.5s;">デジタル公的個人認証口座紐付け案</h2>
-                    <p id="policy-summary" style="margin-top: 10px; font-size: 14px; line-height: 1.6;">
-                        行政手続きの高速化と給付金の誤支給防止を目的とした、全市民の口座データ構造化インフラ整備。
-                    </p>
+                <div class="data-panel">
+                    <h2 id="policy-title" style="transition: color 0.3s;">Loading...</h2>
+                    <p id="policy-summary" style="margin-top: 10px; font-size: 14px; color: #94a3b8; line-height: 1.6;"></p>
 
-                    <h3 style="margin-top: 25px; font-size: 13px; color: var(--text-muted); letter-spacing: 1px;">[自動データ整合性チェック（アサーションエンジン）]</h3>
-                    <div class="chart-container" id="visual-container">
-                        <div class="conflict-badge" id="assertion-status" style="border-color: var(--accent-modern); color: var(--accent-modern); background: transparent;">
-                            ✅ DATA BINDING: CONSISTENT (格子完全結合)
-                        </div>
+                    <div class="chart-container">
+                        <div id="assertion-badge-element" class="assertion-badge">ENGINE INITIALIZING</div>
                     </div>
 
-                    <h3 style="font-size: 13px; color: var(--text-muted); letter-spacing: 1px;">[アサーション対象フィールドの並列展開]</h3>
-                    <div class="parallel-sources" id="source-container">
-                        </div>
+                    <h3 style="font-size: 12px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase;">[ 1次ファクト台帳・クロスゲート接続 ]</h3>
+                    <div class="parallel-sources" id="sources-wrapper"></div>
+
+                    <div id="cross-gate-backup-area"></div>
                 </div>
 
                 <div class="data-panel" style="display: flex; flex-direction: column; gap: 20px;">
                     <div>
-                        <h3 style="font-size: 13px; margin-bottom: 12px; color: var(--text-muted);">[並列貢献ロール：査読実績]</h3>
+                        <h3 style="font-size: 12px; margin-bottom: 12px; color: var(--text-muted); text-transform: uppercase;">[ 並列貢献ロール認証 ]</h3>
                         <div class="rings-container">
-                            <div class="tree-rings" id="tree-rings-visual" style="border-color: var(--accent-modern);"></div>
-                            <p style="font-size: 13px; font-weight: bold;" id="reviewer-name">東大阪シビックテック結社</p>
-                            <p style="font-size: 11px; color: var(--text-muted);" id="role-badge">🛡️ AUDITOR / マージ実績: 42回検証済</p>
+                            <div class="tree-rings" id="tree-rings-visual"></div>
+                            <p style="font-size: 13px; font-weight: bold;" id="meta-contributor">---</p>
+                            <p style="font-size: 11px; color: var(--text-muted);" id="meta-role-badge">---</p>
                         </div>
                     </div>
 
-                    <div style="border-top: 1px solid var(--border-color); padding-top: 20px;" id="global-section">
-                        <h4 style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px; letter-spacing: 1px;">[世界ポインタ（CROSS-GATE REFERENCE）]</h4>
-                        <div class="log-box" id="log-box-element">
-                            <p class="log-text" id="global-ref-text">
-                                🔍 <strong>国番号 91 (インド)</strong>: 「アーダール」の失敗事例を参照中（高齢者認証エラーのバグ報告と結合）。
-                            </p>
+                    <div style="border-top: 1px solid var(--border-color); padding-top: 20px;">
+                        <h4 style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px; letter-spacing: 1px; text-transform: uppercase;">[ コア接続ポインタメタデータ ]</h4>
+                        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 6px; font-family: monospace; font-size: 11px; line-height: 1.6; color: #38bdf8;" id="meta-pointers">
                         </div>
                     </div>
                 </div>
@@ -340,122 +213,173 @@
     </div>
 
     <script>
-        // 国を跨いだデータ結合と矛盾（コンフリクト）のファクトデータ
-        const data = {
+        // 国際電話国番号「886(台湾)」など、海外勢がスターターキットに基づいてコミットしたリアルなJSONデータ構造を、
+        // システム（フロントエンド）側で動的にFetch・パースして結合するシミュレーションマップ。
+        const localRegistry = {
             modern: {
                 title: "現代セクター (2000_present_modern)",
-                accentColor: "#00f2fe",
-                badgeText: "GRID CONSISTENT",
-                badgeBg: "rgba(0, 242, 254, 0.2)",
-                policyTitle: "デジタル公的個人認証口座紐付け案",
-                summary: "行政手続きの高速化と給付金の誤支給防止を目的とした、全市民の口座データ構造化インフラ整備。レガシーな銀行APIのオープン化を加速させるパッチ政策。",
-                assertionStatus: "✅ DATA BINDING: CONSISTENT (格子完全結合)",
-                isConflict: false,
+                color: "#00f2fe",
+                policy: "デジタル公的個人認証・市民投票インフラの整備案",
+                summary: "2026年度仕様変更案。感情的な反発を回避するため、先行する海外ゲートのデータ構造をアサーション（突合）し、バグ（不具合・運用コスト）の事前検知を行うバックアップ対象政策。",
+                assertion: { text: "⚡ CROSS-GATE BINDING: AUTONOMOUS BACKUP (海外前例による構造支援あり)", type: "backup" },
                 sources: [
-                    { label: "kashika-gate-81 (日本政府公認データ)", value: "STATUS: IMPLEMENTED / ERROR_RATE: 0.00%" },
-                    { label: "kashika-gate-91 (インド・アーダール比較)", value: "STATUS: REFERENCED / SYSTEM_MATCH: OK" }
+                    { gate: "kashika-gate-81 (日本国案)", log: "ID: 81_prop_2026_vote<br>STATUS: PROPOSED<br>BUDGET: 12,000,000 USD" }
                 ],
-                reviewer: "東大阪シビックテック結社",
-                role: "🛡️ AUDITOR / マージ実績: 42回検証済",
-                globalRef: "🔍 <strong>国番号 91 (インド)</strong>: 「アーダール」の失敗事例を参照中（高齢者認証エラーのバグ報告と結合）。"
+                // 🧠 ARCHITECTがマッピングした海外ゲートのポインタ（Fetchエミュレーション情報）
+                crossGateFetchPointer: {
+                    gate_code: "886",
+                    country_name: "Taiwan",
+                    source_url: "https://github.com/rainyurumo-nishioka/kashika-gate-886", // 台湾リポジトリの想定
+                    file_path: "eras/1996_digital_democracy/policies/886_g0v_vtaiwan.json",
+                    // 吸い込んできた生データ
+                    fetched_data: {
+                        "policy_id": "886_vtaiwan_2015",
+                        "title": "vTaiwan（デジタル市民対話プラットフォーム）の法整備",
+                        "status": "implemented",
+                        "facts": { "execution_year": 2015, "budget_allocated_usd": 0, "tags": ["Digital Democracy", "Civic Tech"] },
+                        "impact_logs": [
+                            { "metric": "Uber進出に伴う法改正の合意形成期間", "before": "不透明・長期化", "after": "4週間でステークホルダー間の合意形成を完了" },
+                            { "metric": "市民提案の政策反映率", "before": "5%未満", "after": "80%以上の合意案が閣議へ上程" }
+                        ]
+                    }
+                },
+                contributor: "東大阪シビックテック結社",
+                role: "🛡️ AUDITOR / 相互マージ査読: 42回完了",
+                pointers: "POINTER_1: kashika-gate-81/eras/2000_present_modern/policies/81_digital_infra.json<br>POINTER_2: kashika-gate-886/eras/1996_digital_democracy/policies/886_g0v_vtaiwan.json"
             },
             ghq: {
                 title: "占領政策セクター (1945_1952_ghq)",
-                accentColor: "#f59e0b",
-                badgeText: "GRID CONSISTENT",
-                badgeBg: "rgba(245, 158, 11, 0.2)",
-                policyTitle: "自作農創設特別措置法（第二次農地改革）",
-                summary: "寄生地主制を打破し、実際に耕作を行う農民へ土地の所有権を強制的に再分配する、日本社会の経済OS初期ビルドプログラム。GHQの強力なトップダウン指令に基づく。",
-                assertionStatus: "✅ DATA BINDING: CONSISTENT (格子完全結合)",
-                isConflict: false,
+                color: "#f59e0b",
+                policy: "自作農創設特別措置法（第二次農地改革）",
+                summary: "寄生地主制の解体、および耕作農民への土地所有権強制再分配プログラム。大元リポジトリ（kashika-core）でマッピングされた米国公文書館の記録と100%一致。",
+                assertion: { text: "✅ CORRELATION: MATCHED (コアマスターデータと100%一致)", type: "matched" },
                 sources: [
-                    { label: "kashika-gate-81 (農林省告示第百四号)", value: "REFACTORED_LAND: 2,000,000 CHO" },
-                    { label: "kashika-core (米国国立公文書館 NARA)", value: "SCAP_DIRECTIVE: SIGNED / MATCH_CONFIRMED" }
+                    { gate: "kashika-gate-81 (農林省告示第104号)", log: "REFACTORED_LAND: 2,000,000 CHO<br>STATUS: FULLY_EXECUTED" },
+                    { gate: "kashika-core (米国国立公文書館 NARA)", value: "SCAP_DIRECTIVE: SIGNED / MATCHED" }
                 ],
-                reviewer: "KASHIKA歴史データ検証班",
-                role: "📝 SCRIBE / 1次資料写経実績: 154ファイル",
-                globalRef: "🔍 <strong>国番号 1 (アメリカ)</strong>: 国立公文書館(NARA)所蔵の「GHQ/SCAP文書」の一次ソースポインタを直接参照中。"
+                crossGateFetchPointer: null,
+                contributor: "KASHIKA歴史データ写経班",
+                role: "📝 SCRIBE / 1次資料JSON構造化: 154件",
+                pointers: "POINTER_1: kashika-gate-81/eras/1945_1952_ghq/policies/81_constitution.json<br>POINTER_2: kashika-core/registry.json"
             },
             imperial: {
                 title: "大日本帝国・外地セクター (1895_1945_imperial)",
-                accentColor: "#10b981",
-                badgeText: "⚠️ CONFLICT DETECTED",
-                badgeBg: "rgba(239, 68, 68, 0.2)",
-                policyTitle: "1935年 満州鉄道拡張都市インフラ投資計画",
-                summary: "戦前の外地政策におけるインフラ投資ログ。大蔵省資料と現地側の接収・財務記録において、アサーションターゲット [value]（出資額/受入額）のデータ衝突が発生しています。",
-                assertionStatus: "⚠️ ALERT: CONFLICT DETECTED (データ構造の矛盾を検知)",
-                isConflict: true,
+                color: "#10b981",
+                policy: "1935年 満州鉄道拡張都市インフラ投資計画",
+                summary: "当時の日本の国家予算（大蔵省仕様）と、現地に残された財務台帳（受入ログ）のアサーション。数値に重大な食い違い（データの衝突）が検知されています。",
+                assertion: { text: "⚠️ ASSERTION FAILED: CONFLICT DETECTED (データ構造の矛盾)", type: "conflict" },
                 sources: [
-                    { label: "kashika-gate-81 (大蔵省昭和財政史)", value: "VALUE: 50,000,000 JPY (出資記録)" },
-                    { label: "kashika-gate-X (現地側接収財務記録)", value: "VALUE: 35,000,000 JPY (受入記録)" }
+                    { gate: "kashika-gate-81 (大蔵省昭和財政史)", log: "VALUE: 50,000,000 JPY<br>FIELD: 出資総額記録" },
+                    { gate: "kashika-gate-X (現地側接収財務記録)", log: "VALUE: 35,000,000 JPY<br>FIELD: 現地受入総額記録" }
                 ],
-                reviewer: "ARCHITECT (接続特化チーム)",
-                role: "🧠 ARCHITECT / クロスゲート・マッピング解決ログ: 12件",
-                globalRef: "💥 <strong>不一致差分: 15,000,000 JPY</strong><br>システムは解釈を下しません。この「⚠️矛盾マーク」自体が、検証すべき未解決のファクト領域であることを示しています。"
+                crossGateFetchPointer: null,
+                contributor: "ARCHITECT (データグリッド接続班)",
+                role: "🧠 ARCHITECT / クロス参照ポインタ結合: 12件",
+                pointers: "POINTER_1: kashika-gate-81/eras/1895_1945_imperial_era/policies/81_southern_military.json<br>POINTER_2: kashika-gate-X/policies/captured_ledger.json"
             }
         };
 
         function switchEra(eraKey, element) {
-            // クラスの切り替え
             document.querySelectorAll('.era-card').forEach(card => card.classList.remove('active'));
             element.classList.add('active');
 
-            const eraData = data[eraKey];
+            const eraData = localRegistry[eraKey];
+            document.documentElement.style.setProperty('--current-accent', eraData.color);
             
-            // CSS変数を動的にアップデート（全体のテーマカラー同期）
-            document.documentElement.style.setProperty('--current-accent', eraData.accentColor);
-            
-            // テキスト・バッジの更新
+            // 基本情報の更新
             document.getElementById('current-era-title').innerText = eraData.title;
-            
-            const badge = document.getElementById('era-badge');
-            badge.innerText = eraData.badgeText;
-            badge.style.background = eraData.badgeBg;
-            badge.style.color = eraData.isConflict ? "#ef4444" : eraData.accentColor;
-
-            const pTitle = document.getElementById('policy-title');
-            pTitle.innerText = eraData.policyTitle;
-            pTitle.style.color = eraData.isConflict ? "#ef4444" : eraData.accentColor;
-
+            document.getElementById('policy-title').innerText = eraData.policy;
+            document.getElementById('policy-title').style.color = eraData.assertion.type === 'conflict' ? "var(--accent-conflict)" : "var(--current-accent)";
             document.getElementById('policy-summary').innerText = eraData.summary;
-            document.getElementById('reviewer-name').innerText = eraData.reviewer;
-            document.getElementById('role-badge').innerText = eraData.role;
-            document.getElementById('global-ref-text').innerHTML = eraData.globalRef;
+            document.getElementById('meta-contributor').innerText = eraData.contributor;
+            document.getElementById('meta-role-badge').innerText = eraData.role;
+            document.getElementById('meta-pointers').innerHTML = eraData.pointers;
 
-            // コンフリクトバッジのスタイル動的変更
-            const statusBox = document.getElementById('assertion-status');
-            statusBox.innerText = eraData.assertionStatus;
-            if (eraData.isConflict) {
-                statusBox.className = "conflict-badge";
-                statusBox.style.borderColor = "#ef4444";
-                statusBox.style.color = "#fca5a5";
-                statusBox.style.background = "rgba(239, 68, 68, 0.15)";
+            // アサーションバッジのデザイン動的変更
+            const badge = document.getElementById('assertion-badge-element');
+            badge.innerText = eraData.assertion.text;
+            if (eraData.assertion.type === 'conflict') {
+                badge.style.background = "rgba(239, 68, 68, 0.15)";
+                badge.style.border = "1px solid var(--accent-conflict)";
+                badge.style.color = "#fca5a5";
+                document.getElementById('global-matrix-badge').innerText = "CONFLICT WARNING";
+                document.getElementById('global-matrix-badge').style.background = "var(--accent-conflict)";
+            } else if (eraData.assertion.type === 'backup') {
+                badge.style.background = "rgba(168, 85, 247, 0.15)";
+                badge.style.border = "1px solid var(--accent-backup)";
+                badge.style.color = "#e9d5ff";
+                document.getElementById('global-matrix-badge').innerText = "MATRIX BINDING";
+                document.getElementById('global-matrix-badge').style.background = "var(--accent-backup)";
             } else {
-                statusBox.className = "";
-                statusBox.style.borderColor = "transparent";
-                statusBox.style.color = eraData.accentColor;
-                statusBox.style.background = "transparent";
-                statusBox.style.fontSize = "14px";
-                statusBox.style.fontFamily = "monospace";
+                badge.style.background = "rgba(0, 242, 254, 0.1)";
+                badge.style.border = "1px solid var(--accent-modern)";
+                badge.style.color = "var(--accent-modern)";
+                document.getElementById('global-matrix-badge').innerText = "MATRIX ACTIVE";
+                document.getElementById('global-matrix-badge').style.background = "var(--accent-modern)";
             }
 
-            // 並列ソースカードの動的生成
-            const sourceContainer = document.getElementById('source-container');
-            sourceContainer.innerHTML = "";
+            // 1次ファクト台帳カードの生成
+            const wrapper = document.getElementById('sources-wrapper');
+            wrapper.innerHTML = "";
             eraData.sources.forEach(src => {
                 const card = document.createElement('div');
                 card.className = "source-card";
-                card.style.borderLeft = `3px solid ${eraData.isConflict ? '#ef4444' : eraData.accentColor}`;
-                card.innerHTML = `<h4>${src.label}</h4><p>${src.value}</p>`;
-                sourceContainer.appendChild(card);
+                card.style.borderLeft = `3px solid ${eraData.assertion.type === 'conflict' ? 'var(--accent-conflict)' : 'var(--current-accent)'}`;
+                card.innerHTML = `<h4>${src.gate}</h4><p>${src.log}</p>`;
+                wrapper.appendChild(card);
             });
 
-            // 右側のビジュアル同期
-            document.getElementById('tree-rings-visual').style.borderColor = eraData.isConflict ? '#ef4444' : eraData.accentColor;
-            document.getElementById('log-box-element').style.borderLeftColor = eraData.isConflict ? '#ef4444' : eraData.accentColor;
+            // 【マージエンジンコア】海外のポインタデータが存在する場合、そのJSON構造をリアルタイム逆コンパイルしてレンダリング
+            const backupArea = document.getElementById('cross-gate-backup-area');
+            backupArea.innerHTML = "";
+
+            if (eraData.crossGateFetchPointer) {
+                const pointer = eraData.crossGateFetchPointer;
+                const fetched = pointer.fetched_data;
+
+                const backupBox = document.createElement('div');
+                backupBox.className = "backup-ledger-box";
+                
+                // 引き込んできた海外データの前例エビデンスを動的に組み立てる
+                let tableRows = "";
+                fetched.impact_logs.forEach(log => {
+                    tableRows += `
+                        <tr>
+                            <td>${log.metric}</td>
+                            <td style="color:#ef4444; text-decoration:line-through;">${log.before}</td>
+                            <td style="color:#10b981; font-weight:bold;">➔ ${log.after}</td>
+                        </tr>
+                    `;
+                });
+
+                backupBox.innerHTML = `
+                    <div class="backup-title">
+                        <span>🔮</span> 海外ゲート自動結合 [Gate ${pointer.gate_code}: ${pointer.country_name}] からの実績ログ
+                    </div>
+                    <p style="font-size:12px; color:#c084fc; font-family:monospace; margin-bottom:10px;">
+                        FETCH_PATH: ${pointer.file_path}<br>
+                        TARGET_POLICY: ${fetched.title} (${fetched.status.toUpperCase()})
+                    </p>
+                    <table class="impact-log-table">
+                        <thead>
+                            <tr>
+                                <th>検証指標 (Metric)</th>
+                                <th>導入前 (Before)</th>
+                                <th>導入後の実績 (After Fact)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                    <p style="font-size:11px; color:var(--text-muted); margin-top:12px; text-align:right;">
+                        ※この海外ゲートの実績数値ログが、国内政策の「仕様の安全パイプライン」をデータ主導でバックアップしています。
+                    </p>
+                `;
+                backupArea.appendChild(backupBox);
+            }
         }
 
-        // 初期ロード時に「現代」のカードを展開
         window.onload = function() {
             switchEra('modern', document.querySelector('.era-card.modern'));
         };
