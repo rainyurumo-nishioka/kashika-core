@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/kashika-core/kashika-spec/main/registry.schema.json",
+  "title": "KASHIKA Federation Registry Schema",
+  "description": "各国のKASHIKAゲート（分散リポジトリ）を安全に接続・参照するためのグローバルアドレス帳定義",
+  "type": "object",
+  "required": ["manifest_version", "last_updated", "federated_gates"],
+  "properties": {
+    "manifest_version": {
+      "type": "string",
+      "description": "レジストリ・マニフェストのバージョン（例: 1.0.0）"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "アドレス帳の最終更新日時（ISO 8601形式）"
+    },
+    "federated_gates": {
+      "type": "object",
+      "description": "国際電話番号（国番号）をキーとした各国のゲートオブジェクト",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["country_name", "status", "repository", "api_endpoints"],
+        "properties": {
+          "country_name": {
+            "type": "string",
+            "description": "英語表記の国・地域名（例: Japan, Taiwan）"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["ACTIVE", "MAINTENANCE", "DEPRECATED"],
+            "description": "ゲートの稼働ステータス"
+          },
+          "governance": {
+            "type": "object",
+            "required": ["lead_organization"],
+            "properties": {
+              "lead_organization": { "type": "string", "description": "そのゲートの主権・管理責任を持つメイン団体名" },
+              "root_sbt_address": { "type": "string", "description": "管理団体の信頼性を証明するスマートコントラクト/SBTのアドレス" }
+            }
+          },
+          "repository": {
+            "type": "object",
+            "required": ["provider", "url", "main_branch"],
+            "properties": {
+              "provider": { "type": "string", "enum": ["github", "gitlab", "custom"] },
+              "url": { "type": "string", "format": "uri", "description": "独立したソースコード・データリポジトリのURL" },
+              "main_branch": { "type": "string", "default": "main" }
+            }
+          },
+          "api_endpoints": {
+            "type": "object",
+            "required": ["policy_index", "raw_data_root"],
+            "properties": {
+              "policy_index": { 
+                "type": "string", 
+                "format": "uri", 
+                "description": "その国が保持する政策データのインデックス（目録）JSONを取得するAPI/CDNエンドポイント" 
+              },
+              "raw_data_root": { 
+                "type": "string", 
+                "format": "uri", 
+                "description": "個別政策データを取りにいく際のベースURL（末尾にIDを付与してFetchする用）" 
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
