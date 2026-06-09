@@ -11,33 +11,95 @@
             --border-color: #1e293b;
             --text-main: #f8fafc;
             --text-muted: #475569;
-            --accent-color: #22d3ee; /* 各国の設定ファイルで動的に上書き */
+            --accent-color: #22d3ee; /* 各国の設定ファイル（theme_color）で動的に上書きされます */
             --accent-gold: #fbbf24;
         }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: var(--bg-color); color: var(--text-main); font-family: monospace; padding: 30px; }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'SF Pro Display', -apple-system, monospace;
+            padding: 30px;
+        }
         
-        .grid-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(var(--border-color) 1px, transparent 1px), linear-gradient(90deg, var(--border-color) 1px, transparent 1px); background-size: 50px 50px; opacity: 0.1; z-index: -1; }
+        /* サイバーグリッド背景効果 */
+        .grid-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: linear-gradient(var(--border-color) 1px, transparent 1px), linear-gradient(90deg, var(--border-color) 1px, transparent 1px);
+            background-size: 50px 50px; opacity: 0.1; z-index: -1;
+        }
         
-        header { border-bottom: 2px solid var(--border-color); padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .gate-badge { background: var(--accent-color); color: #000; font-weight: bold; padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px; margin-bottom: 30px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+        .gate-title-area h1 { font-size: 24px; font-weight: 900; letter-spacing: 2px; }
+        .gate-badge {
+            background: var(--accent-color); color: #000; font-weight: bold;
+            padding: 4px 12px; border-radius: 4px; font-size: 12px; letter-spacing: 1px;
+            transition: background 0.3s;
+        }
         
-        .layout { display: grid; grid-template-columns: 280px 1fr; gap: 30px; }
+        .layout { display: grid; grid-template-columns: 320px 1fr; gap: 30px; }
+        
+        /* 左サイドメニュー：政策ノード選択 */
         .menu-panel { display: flex; flex-direction: column; gap: 12px; }
-        .node-link { background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 15px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
-        .node-link:hover, .node-link.active { border-color: var(--accent-color); background: rgba(34, 211, 238, 0.02); }
+        .node-link {
+            background: rgba(255,255,255,0.01); border: 1px solid var(--border-color);
+            padding: 15px; border-radius: 6px; cursor: pointer; transition: all 0.2s;
+        }
+        .node-link:hover { border-color: var(--accent-color); background: rgba(255, 255, 255, 0.02); }
+        .node-link.active {
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.03);
+            box-shadow: inset 3px 0 0 var(--accent-color);
+        }
+        .node-link h4 { font-size: 13px; font-weight: bold; margin-bottom: 4px; }
+        .node-link span { font-size: 10px; color: var(--text-muted); }
         
-        .main-panel { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 25px; }
-        .fact-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .fact-table th, .fact-table td { text-align: left; padding: 10px; border-bottom: 1px solid var(--border-color); font-size: 13px; }
+        /* メインデータパネル */
+        .main-panel {
+            background: var(--panel-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 30px; backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .policy-header { margin-bottom: 20px; }
+        .policy-header h2 { font-size: 20px; font-weight: bold; letter-spacing: 1px; }
+        .policy-desc { color: #94a3b8; margin-top: 10px; font-size: 14px; line-height: 1.6; }
         
-        /* ⚡ 共通仕様：経済分配ソケットUI */
-        .p2p-socket-box { background: rgba(251, 191, 36, 0.02); border: 1px dashed rgba(251, 191, 36, 0.3); border-radius: 6px; padding: 15px; margin-top: 25px; }
-        .socket-header { display: flex; justify-content: space-between; align-items: center; color: var(--accent-gold); font-weight: bold; margin-bottom: 8px; }
-        .p2p-btn { background: linear-gradient(135deg, #fbbf24, #d97706); border: none; padding: 4px 12px; border-radius: 4px; color: #000; font-weight: bold; cursor: pointer; font-family: monospace; font-size: 11px; }
-        .p2p-btn:hover { transform: scale(1.02); }
+        /* ファクトデータ構造化テーブル */
+        .fact-table { width: 100%; border-collapse: collapse; margin-top: 25px; }
+        .fact-table th { color: var(--text-muted); text-align: left; padding: 12px; font-size: 11px; text-transform: uppercase; border-bottom: 2px solid var(--border-color); }
+        .fact-table td { padding: 14px 12px; border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 13px; }
         
-        .bar-container { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 10px; background: #0f172a; }
+        /* ⚡ 共通規格：事後感謝型経済分配ソケットUI */
+        .p2p-socket-box {
+            background: rgba(251, 191, 36, 0.02); border: 1px dashed rgba(251, 191, 36, 0.25);
+            border-radius: 8px; padding: 20px; margin-top: 35px;
+        }
+        .socket-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .socket-status-label { color: var(--accent-gold); font-weight: bold; font-size: 12px; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+        
+        /* 事後感謝ボタン */
+        .p2p-thanks-btn {
+            background: linear-gradient(135deg, #fbbf24, #d97706); border: none;
+            padding: 6px 14px; border-radius: 4px; color: #000; font-weight: bold;
+            font-family: monospace; font-size: 11px; cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.15);
+        }
+        .p2p-thanks-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(251, 191, 36, 0.3);
+        }
+        
+        .socket-destination { font-size: 12px; color: #fff; background: rgba(0,0,0,0.4); padding: 6px 10px; border-radius: 4px; display: inline-block; margin-top: 4px; }
+        .socket-note { margin-top: 8px; color: #64748b; font-size: 11px; line-height: 1.5; }
+        
+        /* 自動傾斜分配インジケーターバー */
+        .ratio-meta-area { display: flex; gap: 20px; margin-top: 15px; font-size: 11px; }
+        .ratio-bar-container { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 10px; background: #0f172a; }
         .b-scribe { background: #22d3ee; }
         .b-auditor { background: #fbbf24; }
         .b-architect { background: #c084fc; }
@@ -48,7 +110,7 @@
     <div class="grid-layer"></div>
 
     <header>
-        <div>
+        <div class="gate-title-area">
             <h1 id="gate-title">KASHIKA // CORE GATE TERMINAL</h1>
             <p id="gate-repo" style="color: var(--text-muted); font-size: 12px; margin-top: 4px;">REPO: loading...</p>
         </div>
@@ -60,15 +122,25 @@
             </div>
 
         <div class="main-panel">
-            <h2 id="policy-title">政策を選択してください</h2>
-            <p id="policy-desc" style="color: #94a3b8; margin-top: 10px; font-size: 14px; line-height: 1.6;"></p>
+            <div class="policy-header">
+                <h2 id="policy-title">データ台帳を選択してください</h2>
+                <p id="policy-desc" class="policy-desc"></p>
+            </div>
             
             <table class="fact-table">
                 <thead>
-                    <tr><th>METRIC (検証指標)</th><th>BEFORE</th><th>AFTER (ファクト数値)</th></tr>
+                    <tr>
+                        <th style="width: 45%;">METRIC (検証指標)</th>
+                        <th style="width: 25%;">BEFORE (旧来OS)</th>
+                        <th style="width: 30%;">AFTER (実証ファクト数値)</th>
+                    </tr>
                 </thead>
                 <tbody id="fact-body">
-                    <tr><td colspan="3" style="color:var(--text-muted);">No data selected</td></tr>
+                    <tr>
+                        <td colspan="3" style="color:var(--text-muted); text-align: center; padding: 40px;">
+                            左メニューから政策データを選択すると、マトリクス構造が展開されます。
+                        </td>
+                    </tr>
                 </tbody>
             </table>
 
@@ -77,87 +149,123 @@
     </div>
 
     <script>
-        // 国際標準設定ファイルのモック（各国の記述兵がここを自国用に書き換える）
+        /**
+         * ====================================================================
+         * ⚙️ 各国ゲート記述兵（Scribe）用・ローカル設定オブジェクト
+         * ====================================================================
+         * 各国独自のゲートを立ち上げる際は、以下のオブジェクトを自国のデータに書き換えてください。
+         * 将来的には、同一ディレクトリ内の `gate_config.json` から非同期フェッチする構造に移行可能です。
+         */
         const gateConfig = {
-            gate_code: "33",
-            country: "France",
-            repository: "github.com/france-digital-civics/kashika-gate-33",
-            theme_color: "#3b82f6", // フランスブルー
+            gate_code: "33",                                          // 国際電話番号ベースのゲートコード (例: 33 = フランス)
+            country: "France",                                        // 対象国・地域名
+            repository: "github.com/france-digital-civics/kashika-gate-33", // 自国ゲートのGitソース管理ポインタ
+            theme_color: "#2563eb",                                   // ゲートのプライマリーカラー（サイバーエフェクト用）
             policies: [
                 {
                     id: "33_paris_budget_2024",
-                    title: "パリ市 参加型予算（市民直接投票枠）システム",
-                    desc: "年間投資予算の5%（約1億ユーロ）を市民の直接提案・投票によって執行する構造化ログ。写経完了済み台帳。",
+                    title: "パリ市 参加型予算（市民直接投票・執行枠）",
+                    desc: "年間投資予算の5%（約1億ユーロ）の使い道を、市民の直接提案とデジタル投票によって決定・執行する自治体OSの構造化ログ。写経完了済み台帳。",
                     metrics: [
-                        { name: "市民提案プロジェクトの年間採択数", before: "0 件", after: "219 件 (2024年度)" },
-                        { name: "投票参加市民の総数", before: "低迷", after: "超過 100,000 人" }
+                        { name: "市民提案プロジェクトの年間採択・執行数", before: "0 件 (すべて議会一任)", after: "219 件 (2024年度実績)" },
+                        { name: "予算策定のデジタル投票に参加した市民総数", before: "統計なし", after: "100,000 人を突破" },
+                        { name: "貧困セクター・低開発地域への予算傾斜配分率", before: "一律・不透明", after: "全体の 30% を優先割り当てに固定" }
                     ],
+                    // ⚡ 規格化された事後感謝型経済ソケット定義
                     funding_sockets: {
-                        destination_address: "paris-civic-tech@opencollective.com",
-                        allocation_ratio: { scribes: 70, auditors: 20, architects: 10 }
+                        destination_address: "paris-civic-tech@opencollective.com", // 感謝送金を受け取るP2Pエンドポイント
+                        allocation_ratio: { 
+                            scribes: 70,    // 1次資料の写経・JSON構造化を行った「記述兵」への分配比率 (%)
+                            auditors: 20,   // データの真偽、エビデンスのクロスチェックを行った「査読兵」への分配比率 (%)
+                            architects: 10  // グリッド間の参照ポインタやスキーマを結合した「接続兵」への分配比率 (%)
+                        }
                     }
                 }
             ]
         };
 
-        // 初期セットアップ
+        /**
+         * 🔄 ゲート初期化エンジン
+         */
         function initGate() {
-            // 設定値の動的適用
+            // 各国テーマカラーおよびメタデータの動的バインド
             document.documentElement.style.setProperty('--accent-color', gateConfig.theme_color);
             document.getElementById('gate-title').innerText = `KASHIKA // ${gateConfig.country.toUpperCase()} GATE`;
             document.getElementById('gate-repo').innerText = `REPO: ${gateConfig.repository}`;
             document.getElementById('gate-code-badge').innerText = `GATE ${gateConfig.gate_code}`;
 
-            // 左メニュー生成
+            // 左側インデックスメニューの自動生成
             const menuWrapper = document.getElementById('menu-wrapper');
             menuWrapper.innerHTML = "";
-            gateConfig.policies.forEach((p, idx) => {
+            
+            gateConfig.policies.forEach((policy, index) => {
                 const item = document.createElement('div');
-                item.className = `node-link ${idx === 0 ? 'active' : ''}`;
-                item.innerText = p.title;
-                item.onclick = () => renderPolicy(p, item);
+                item.className = `node-link ${index === 0 ? 'active' : ''}`;
+                item.innerHTML = `
+                    <h4>${policy.title}</h4>
+                    <span>ID: ${policy.id}</span>
+                `;
+                item.onclick = () => renderPolicy(policy, item);
                 menuWrapper.appendChild(item);
             });
 
-            // 初期表示
+            // 初期ロード時に最初の政策ノードを展開
             if(gateConfig.policies.length > 0) {
                 renderPolicy(gateConfig.policies[0], menuWrapper.firstChild);
             }
         }
 
-        // 政策ファクトデータの描画 ＆ 経済ソケットの自動展開
-        function renderPolicy(p, element) {
+        /**
+         * 📊 構造化ファクトのレンダリング ＆ 事後感謝ソケットの動的マージ
+         */
+        function renderPolicy(policy, menuElement) {
+            // アクティブなメニュー項目のスタイル切り替え
             document.querySelectorAll('.node-link').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
+            menuElement.classList.add('active');
 
-            document.getElementById('policy-title').innerText = p.title;
-            document.getElementById('policy-desc').innerText = p.desc;
+            // 政策の基本情報書き換え
+            document.getElementById('policy-title').innerText = policy.title;
+            document.getElementById('policy-desc').innerText = policy.desc;
 
-            // テーブル展開
+            // ファクトテーブルの動的展開
             const tbody = document.getElementById('fact-body');
             tbody.innerHTML = "";
-            p.metrics.forEach(m => {
-                tbody.innerHTML += `<tr><td><strong>${m.name}</strong></td><td style="color:#ef4444; text-decoration:line-through;">${m.before}</td><td style="color:var(--accent-color); font-weight:bold;">➔ ${m.after}</td></tr>`;
+            policy.metrics.forEach(m => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${m.name}</strong></td>
+                        <td style="color:#ef4444; text-decoration:line-through; font-family: monospace;">${m.before}</td>
+                        <td style="color:var(--accent-color); font-weight:bold; font-family: monospace;">➔ ${m.after}</td>
+                    </tr>
+                `;
             });
 
-            // ⚡ 規格化経済ソケットのインジェクション
+            // ⚡ 事後感謝型経済ソケットのインジェクション
             const socketArea = document.getElementById('socket-injection-area');
             socketArea.innerHTML = "";
-            if (p.funding_sockets) {
-                const sk = p.funding_sockets;
+            
+            if (policy.funding_sockets) {
+                const sk = policy.funding_sockets;
                 socketArea.innerHTML = `
                     <div class="p2p-socket-box">
                         <div class="socket-header">
-                            <span>⚡ FUNDING SOCKET ACTIVE // P2P支援ポート</span>
-                            <button class="p2p-btn" onclick="triggerP2P('${sk.destination_address}')">⚡ DIRECT DONATE</button>
+                            <span class="socket-status-label">📡 THANKS SOCKET ACTIVE // 事後感謝パイプライン開通</span>
+                            <button class="p2p-thanks-btn" onclick="triggerP2PThanks('${sk.destination_address}', '${policy.title}')">
+                                ⚡ このデータに助けられた (THANK THIS FACT)
+                            </button>
                         </div>
-                        <div style="font-size:12px; color:#fff;">DEST: ${sk.destination_address}</div>
-                        <div style="display:flex; gap:15px; margin-top:8px; font-size:11px; color:var(--text-muted);">
-                            <span style="color:#22d3ee">Scribes: ${sk.allocation_ratio.scribes}%</span>
-                            <span style="color:#fbbf24">Auditors: ${sk.allocation_ratio.auditors}%</span>
-                            <span style="color:#c084fc">Architects: ${sk.allocation_ratio.architects}%</span>
+                        <div>SOCKET_ADDRESS: <span class="socket-destination">${sk.destination_address}</span></div>
+                        <p class="socket-note">
+                            ※「お金目的のデータ乱造（スパム）」を防ぐため、このソケットは事後感謝型で駆動します。<br>
+                            他国の政策検証やシビックテック活動でこのファクトログが実際に役立った際、ユーザーの自発的な意志によって送信された支援金は、中央組織を挟まず、以下の比率でこの『穴』を埋めてくれた貢献者たちへP2Pで直接、傾斜分配されます。
+                        </p>
+                        
+                        <div class="ratio-meta-area">
+                            <span style="color:#22d3ee">📝 記述兵 (Scribes): ${sk.allocation_ratio.scribes}%</span>
+                            <span style="color:#fbbf24">🔍 査読兵 (Auditors): ${sk.allocation_ratio.auditors}%</span>
+                            <span style="color:#c084fc">🧠 接続兵 (Architects): ${sk.allocation_ratio.architects}%</span>
                         </div>
-                        <div class="bar-container">
+                        <div class="ratio-bar-container">
                             <div class="b-scribe" style="width: ${sk.allocation_ratio.scribes}%"></div>
                             <div class="b-auditor" style="width: ${sk.allocation_ratio.auditors}%"></div>
                             <div class="b-architect" style="width: ${sk.allocation_ratio.architects}%"></div>
@@ -167,11 +275,24 @@
             }
         }
 
-        function triggerP2P(address) {
-            alert(`[KASHIKA NETWORK P2P DISPATCH]\n\nConnecting directly to: ${address}\nIntermediary Fees: 0%\nAllocation will be processed according to the node specification logic.`);
-            window.open(`https://ln.meta.com/pay?to=${address}`, '_blank');
+        /**
+         * ⚡ P2P感謝送金インターフェース（暗号通貨・Lightning Network等へのフックポインタ）
+         */
+        function triggerP2PThanks(address, policyTitle) {
+            alert(
+                `【KASHIKA NETWORK // P2P THANKS DISPATCH】\n\n` +
+                `対象データ: 「${policyTitle}」\n` +
+                `エンドポイント: ${address}\n\n` +
+                `『このファクトデータのおかげで、システム構築や政策検証のバグ（穴）を埋めることができた』という事後感謝のエビデンスと共に、直接送金パイプラインを起動します。\n\n` +
+                `中間手数料は0%です。貢献したギークたちのロール比率に応じて、ウォレット間で自動傾斜分配されます。`
+            );
+            
+            // 将来的なWeb3ウォレットやWebLNプロトコルとの統合を見据えた外部決済ジャンプ（エミュレーション）
+            const memoText = `Thanks for resolving: ${policyTitle}`;
+            window.open(`https://ln.meta.com/pay?to=${address}&memo=${encodeURIComponent(memoText)}`, '_blank');
         }
 
+        // DOMの読み込み完了時に初期化エンジンをキック
         window.onload = initGate;
     </script>
 </body>
