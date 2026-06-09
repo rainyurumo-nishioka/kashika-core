@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -44,7 +44,7 @@
         .panel { background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; backdrop-filter: blur(12px); box-shadow: 0 20px 40px rgba(0,0,0,0.7); }
         .panel-title { font-size: 15px; font-weight: 800; letter-spacing: 1px; margin-bottom: 20px; font-family: monospace; display: flex; align-items: center; gap: 8px; }
 
-        /* 左側：世界レジストリ */
+        /* Left Side: Sector Registry */
         .gate-list { display: flex; flex-direction: column; gap: 15px; }
         .gate-row {
             background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.03); border-radius: 8px; padding: 15px;
@@ -61,41 +61,40 @@
         }
         .ask-gate-btn:hover { background: var(--accent-cyan); color: #000; }
 
-        /* 右側：世界が求める政策データ（Wanted Logs） */
+        /* Right Side: Wanted Logs */
         .wanted-list { display: flex; flex-direction: column; gap: 15px; }
         .wanted-card { background: rgba(244, 63, 94, 0.02); border: 1px solid rgba(244, 63, 94, 0.2); border-radius: 8px; padding: 18px; position: relative; }
         .wanted-badge { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; font-family: monospace; display: inline-block; margin-bottom: 8px; }
         .wanted-title { font-size: 15px; font-weight: bold; margin-bottom: 6px; }
         .wanted-desc { font-size: 13px; color: #94a3b8; line-height: 1.5; margin-bottom: 15px; }
 
-        /* リンク提供入力フォーム */
+        /* Fact Input Group */
         .link-input-group { display: flex; gap: 8px; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px; }
         .link-input-group input { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid var(--border-color); border-radius: 4px; padding: 6px 10px; color: #fff; font-size: 12px; }
         .link-input-group button { background: rgba(52, 211, 153, 0.1); border: 1px solid rgba(52, 211, 153, 0.4); color: var(--accent-green); padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s; }
         .link-input-group button:hover { background: var(--accent-green); color: #000; }
 
-        /* 提供されたファクトの表示 */
         .provided-links { font-size: 12px; margin-top: 10px; color: var(--accent-green); font-family: monospace; }
         .provided-links a { color: var(--accent-green); text-decoration: underline; }
 
-        /* ⚡ 経済レイヤー：寄付入口（ソケット情報） */
+        /* ⚡ Thanks Resolution Socket */
         .funding-socket-box {
             background: rgba(251, 191, 36, 0.03); border: 1px dashed rgba(251, 191, 36, 0.3);
             border-radius: 6px; padding: 12px; margin-top: 12px; font-size: 11px; font-family: monospace;
         }
         .funding-header { color: var(--accent-gold); font-weight: bold; margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
-        .donate-action-btn {
-            background: linear-gradient(135deg, #fbbf24, #d97706); border: none; padding: 3px 8px;
+        .thanks-action-btn {
+            background: linear-gradient(135deg, #fbbf24, #d97706); border: none; padding: 4px 10px;
             border-radius: 4px; color: #000; font-weight: bold; font-size: 10px; cursor: pointer; transition: all 0.2s;
         }
-        .donate-action-btn:hover { transform: scale(1.05); box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
+        .thanks-action-btn:hover { transform: scale(1.05); box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
 
         .ratio-bar-container { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin-top: 8px; background: #1e293b; }
         .ratio-scribe { background: var(--accent-cyan); }
         .ratio-auditor { background: var(--accent-gold); }
         .ratio-architect { background: var(--accent-purple); }
 
-        /* ダイアログ */
+        /* Modal Dialog */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-content { background: #0f172a; border: 1px solid var(--accent-cyan); border-radius: 12px; padding: 30px; width: 480px; }
         .modal-content h2 { font-size: 16px; margin-bottom: 15px; font-family: monospace; color: var(--accent-cyan); }
@@ -111,62 +110,62 @@
     <header>
         <div class="brand-title">
             <h1>KASHIKA // GLOBAL MATRIX CONTROL TOWER</h1>
-            <p>世界共通コアマスターレジストリ＆並列データ請求・経済ソケットマージコンソール</p>
+            <p>Global Master Registry // Cross-Border Data Call & Retrospective Gratitude Merge Console</p>
         </div>
-        <div style="font-family: monospace; font-size: 11px; color: var(--accent-cyan);">CORE_PROTOCOL: v0.4.0 // ECONOMY_LAYER: ACTIVE</div>
+        <div style="font-family: monospace; font-size: 11px; color: var(--accent-cyan);">CORE_PROTOCOL: v0.6.0 // RETROSPECTIVE_THANKS_SOC: ACTIVE</div>
     </header>
 
     <div class="dashboard-grid">
         <div class="panel">
-            <div class="panel-title" style="color: var(--accent-cyan);">🌐 WORLD REGISTRY (世界公認ゲート一覧)</div>
+            <div class="panel-title" style="color: var(--accent-cyan);">🌐 WORLD REGISTRY (OFFICIAL SECTOR GATES)</div>
             <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">
-                各国独立ゲートのリポジトリ一覧。ここから直接各国のIssueへ「データ要求（Data Call）」を射出します。
+                Decentralized nation-state registries. Dispatch data call payloads directly to specific country issue pipelines.
             </p>
             
             <div class="gate-list" id="gate-list-container">
                 <div class="gate-row">
                     <div class="gate-info"><h3>🇯🇵 Japan Sector (Gate 81)</h3><p>REPO: github.com/kashika-protocol/kashika-gate-81</p></div>
-                    <button class="ask-gate-btn" onclick="openAskModal('81', 'Japan')">💬 直接データ要求</button>
+                    <button class="ask-gate-btn" onclick="openAskModal('81', 'Japan')">💬 DISPATCH DATA CALL</button>
                 </div>
                 <div class="gate-row">
                     <div class="gate-info"><h3>🇹🇼 Taiwan Sector (Gate 886)</h3><p>REPO: github.com/taiwan-digital-civics/kashika-gate-886</p></div>
-                    <button class="ask-gate-btn" onclick="openAskModal('886', 'Taiwan')">💬 直接データ要求</button>
+                    <button class="ask-gate-btn" onclick="openAskModal('886', 'Taiwan')">💬 DISPATCH DATA CALL</button>
                 </div>
                 <div class="gate-row">
                     <div class="gate-info"><h3>🇪🇪 Estonia Sector (Gate 372)</h3><p>REPO: github.com/estonia-core/kashika-gate-372</p></div>
-                    <button class="ask-gate-btn" onclick="openAskModal('372', 'Estonia')">💬 直接データ要求</button>
+                    <button class="ask-gate-btn" onclick="openAskModal('372', 'Estonia')">💬 DISPATCH DATA CALL</button>
                 </div>
             </div>
         </div>
 
         <div class="panel">
-            <div class="panel-title" style="color: var(--accent-rose);">📡 WANTED LOGS (世界が今求めている検証データ)</div>
+            <div class="panel-title" style="color: var(--accent-rose);">📡 WANTED LOGS (STRUCTURAL EVIDENCE RETRIEVAL)</div>
             <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 20px;">
-                前例エビデンスが不足している政策ノード。1次ファクトのURLを提供すると、埋め込まれた比率に沿って貢献者へ直接投げ銭が可能になります。
+                Missing structural vacuums. Submit peer-verified primary source URLs. Once validated, users deriving systemic utility can retrospectively stream capital to the specific builders.
             </p>
 
             <div class="wanted-list" id="wanted-list-container">
                 <div class="wanted-card" id="wanted-1">
                     <span class="wanted-badge">NEED: CIVIC TECH FACT</span>
-                    <div class="wanted-title">「市民提案プラットフォームの、実際の法改正反映率」の統計</div>
-                    <div class="wanted-desc">日本ゲート(81)が2026年仕様の新システムを検証中。台湾のvTaiwan以外で、市民提案が実際に可決・運用された実績数値ログを持つURLを募集。</div>
+                    <div class="wanted-title">"Civic Proposal Platforms: Actual Legislative Conversion Rates"</div>
+                    <div class="wanted-desc">Japan Sector (Gate 81) is backstopping its 2026 decentralized digital roadmap. Seeking peer metrics (excluding vTaiwan) tracking primary source data where citizen proposals directly led to implemented laws.</div>
                     
                     <div class="provided-links" id="links-area-1"></div>
                     <div class="link-input-group">
-                        <input type="text" id="input-1" placeholder="https://github.com/... または公文書URL">
-                        <button onclick="submitLink(1, 'taiwan-digital-civics@getalby.com', 60, 30, 10)">🔗 リンク提供</button>
+                        <input type="text" id="input-1" placeholder="https://github.com/... or official archival URL">
+                        <button onclick="submitLink(1, 'taiwan-digital-civics@getalby.com', 70, 20, 10)">🔗 MERGE FACT</button>
                     </div>
                 </div>
 
                 <div class="wanted-card" id="wanted-2">
                     <span class="wanted-badge">NEED: FINANCIAL BUDGET LOG</span>
-                    <div class="wanted-title">「1940年代 農地再分配に関する政府財務台帳」</div>
-                    <div class="wanted-desc">日本セクターの占領期地主解体プログラムとの構造突合用。東アジアまたは欧州圏で、同時期の小作農自立化政策の予算執行公文書アーカイブを求む。</div>
+                    <div class="wanted-title">"1940s Agrarian Land Redistribution General Ledger"</div>
+                    <div class="wanted-desc">Required for structural correlation with Japan's post-war land reform dataset. Seeking fiscal execution logs or archival policy parameters regarding smallholder empowerment initiatives in East Asia or Europe during the same era.</div>
                     
                     <div class="provided-links" id="links-area-2"></div>
                     <div class="link-input-group">
                         <input type="text" id="input-2" placeholder="https://...">
-                        <button onclick="submitLink(2, 'global-history-fund@opencollective.com', 50, 40, 10)">🔗 リンク提供</button>
+                        <button onclick="submitLink(2, 'global-history-fund@opencollective.com', 60, 30, 10)">🔗 MERGE FACT</button>
                     </div>
                 </div>
             </div>
@@ -175,12 +174,12 @@
 
     <div class="modal" id="ask-modal">
         <div class="modal-content">
-            <h2 id="modal-gate-title">📡 ゲートへの直接データ請求</h2>
+            <h2 id="modal-gate-title">📡 Automated Data Call Request</h2>
             <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px; font-family: monospace;" id="modal-gate-sub"></p>
             <textarea id="modal-text" rows="5"></textarea>
             <div class="modal-actions">
                 <button class="modal-btn" style="background:#1e293b; color:#fff;" onclick="closeAskModal()">CANCEL</button>
-                <button class="modal-btn" style="background:var(--accent-cyan); color:#000;" onclick="dispatchDataCall()">GitHubへ要求を射出 (DISPATCH)</button>
+                <button class="modal-btn" style="background:var(--accent-cyan); color:#000;" onclick="dispatchDataCall()">DISPATCH TO GITHUB</button>
             </div>
         </div>
     </div>
@@ -192,9 +191,9 @@
         function openAskModal(gateCode, gateName) {
             currentTargetGateCode = gateCode;
             currentTargetGateName = gateName;
-            document.getElementById('modal-gate-title').innerText = `📡 ゲート ${gateCode} (${gateName}) への直接データ請求`;
-            document.getElementById('modal-gate-sub').innerText = `TARGET_REPO: github.com/kashika-gate-${gateCode}/issues/new`;
-            document.getElementById('modal-text').value = `【データ請求】KASHIKAグローバルコアより要請：\n${gateName}セクター内における、以下の構造化ファクトデータの提供、またはアーカイブの有無を確認させてください。\n\n・[要求データの内容をここに記述]`;
+            document.getElementById('modal-gate-title').innerText = `📡 Automated Data Call to Gate ${gateCode} (${gateName})`;
+            document.getElementById('modal-gate-sub').innerText = `TARGET_ENDPOINT: github.com/kashika-gate-${gateCode}/issues/new`;
+            document.getElementById('modal-text').value = `【DATA CALL】Request via KASHIKA Global Core:\nPlease verify the existence or structural availability of primary source historical records/JSON maps regarding the following parameters in the ${gateName} Sector:\n\n・[Specify required structural metrics/data schema here]`;
             document.getElementById('ask-modal').style.display = "flex";
         }
 
@@ -204,42 +203,40 @@
             const text = document.getElementById('modal-text').value;
             let baseUrl = `https://github.com/kashika-protocol/kashika-gate-${currentTargetGateCode}/issues/new`;
             let githubUrl = `${baseUrl}?title=${encodeURIComponent('【KASHIKA CORE DATA CALL】')}&body=${encodeURIComponent(text)}`;
-            alert(`Gate ${currentTargetGateCode} のGitHubリポジトリへパイプラインを繋ぎます。遷移先で『Submit new issue』を押して確定してください。`);
+            alert(`Opening connection pipe to Gate ${currentTargetGateCode} GitHub Issues. Review and click "Submit new issue" to lock the request.`);
             window.open(githubUrl, '_blank');
             closeAskModal();
         }
 
-        // リンク提供時、該当政策ノードに埋め込まれていた寄付入口（経済ソケット）を逆コンパイルして動的に生成
         function submitLink(wantedId, donateAddress, sRatio, aRatio, arcRatio) {
             const inputElement = document.getElementById(`input-${wantedId}`);
             const url = inputElement.value.trim();
 
             if (!url) {
-                alert("有効なファクトURLを入力してください。");
+                alert("Please input a valid fact URL.");
                 return;
             }
 
-            // ファクトリンクのレンダリング
             const linksArea = document.getElementById(`links-area-${wantedId}`);
             const newLinkWrap = document.createElement('div');
             newLinkWrap.style.margin = "10px 0";
-            newLinkWrap.innerHTML = `➔ <strong>提供されたファクト:</strong> <a href="${url}" target="_blank">${url}</a> <span style="color:var(--accent-gold)">(査読中)</span>`;
+            newLinkWrap.innerHTML = `➔ <strong>Submitted Fact:</strong> <a href="${url}" target="_blank">${url}</a> <span style="color:var(--accent-gold)">(Auditing En Route)</span>`;
             linksArea.appendChild(newLinkWrap);
 
-            // ⚡ 経済ソケット（投げ銭受け皿 ＋ 自動傾斜分配メーター）の動的インジェクション
+            // Injection of Retrospective Thanks Socket
             const socketBox = document.createElement('div');
             socketBox.className = "funding-socket-box";
             socketBox.innerHTML = `
                 <div class="funding-header">
-                    <span>⚡ FUNDING SOCKET ACTIVE // 寄付の直接受付中</span>
-                    <button class="donate-action-btn" onclick="executeTriggerDonate('${donateAddress}')">⚡ 寄付・投げ銭を送る</button>
+                    <span>⚡ THANKS SOCKET ACTIVE // Retrospective Peer Clearing Gate</span>
+                    <button class="thanks-action-btn" onclick="executeTriggerThanks('${donateAddress}', 'Wanted Node #${wantedId}')">⚡ THANK THIS FACT</button>
                 </div>
-                <div>ADDRESS: <span style="color:#fff;">${donateAddress}</span></div>
-                <div style="margin-top: 5px; color:var(--text-muted);">このノードへ着金時、運営を挟まず以下の比率で関わった開発ロールへP2P自動分配されます:</div>
+                <div>DESTINATION_PORT: <span style="color:#fff;">${donateAddress}</span></div>
+                <div style="margin-top: 5px; color:var(--text-muted); font-size:10px;">If this artifact patched your system's missing links, clear engineering debts via direct P2P streaming. Capital distributes split-ratio directly to the builders:</div>
                 <div style="display:flex; gap:10px; margin-top:5px; font-size:10px;">
-                    <span style="color:var(--accent-cyan)">📝 記述兵 (Scribe): ${sRatio}%</span>
-                    <span style="color:var(--accent-gold)">🔍 査読兵 (Auditor): ${aRatio}%</span>
-                    <span style="color:var(--accent-purple)">🧠 接続兵 (Architect): ${arcRatio}%</span>
+                    <span style="color:var(--accent-cyan)">📝 Scribes: ${sRatio}%</span>
+                    <span style="color:var(--accent-gold)">🔍 Auditors: ${aRatio}%</span>
+                    <span style="color:var(--accent-purple)">🧠 Architects: ${arcRatio}%</span>
                 </div>
                 <div class="ratio-bar-container">
                     <div class="ratio-scribe" style="width: ${sRatio}%"></div>
@@ -249,15 +246,13 @@
             `;
             linksArea.appendChild(socketBox);
 
-            alert("ファクト提出、およびJSONに定義された『経済ソケット』の結合に成功しました！");
+            alert("Fact successfully indexed into grid. Connected retrospective thanks socket parameters.");
             inputElement.value = "";
         }
 
-        // 実際の直接寄付ジャンプ（P2P送金エミュレーション）
-        function executeTriggerDonate(address) {
-            alert(`中央組織を介さないP2P送金を実行します。\n送金先アドレス: ${address}\n\nこの送金は、記述兵・査読兵・接続兵のウォレットへ設定された比率の通り直接、傾斜分配されます。`);
-            // 将来的にWeb3ウォレット（Window.ethereum）やLightning Network（webln）のAPIをここに発火させる
-            window.open(`https://ln.meta.com/pay?to=${address}`, '_blank');
+        function executeTriggerThanks(address, targetName) {
+            alert(`[P2P THANKS PROTCOL ACTIVATED]\n\nRouting direct gratitude to wallet: ${address}\nSystem Payload: Retrospective appreciation for [${targetName}]\n\nIntermediary Platform Cut: 0%\nCapital will auto-split exactly according to Scribe/Auditor/Architect proportions.`);
+            window.open(`https://ln.meta.com/pay?to=${address}&memo=${encodeURIComponent('Retrospective gratitude for ' + targetName)}`, '_blank');
         }
     </script>
 </body>
