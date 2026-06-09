@@ -1,0 +1,85 @@
+{
+  "$schema": "https://kashika.org/schemas/policy_log.v1.json",
+  "policy_id": "81_policy_immigration_2026",
+  "country_code": "81",
+  "category": "IMMIGRATION_CONTROL",
+  "last_updated": "2026-06-10T00:00:00Z",
+  "source_documents": [
+    "出入国管理及び難民認定法及び出入国管理及び難民認定法第二条第五号ロの旅券を所持する外国人の上陸申請の特例に関する法律の一部を改正する法律案（2026年3月10日閣議決定、同年5月29日国会成立）",
+    "出入国管理及び難民認定法等の一部を改正する法律の施行に伴う関係政令の整備等及び経過措置に関する政令（2026年6月14日施行）"
+  ],
+  "structural_mutations": [
+    {
+      "event": "IMMIGRATION_FEE_CEILING_REVISION",
+      "date": "2026-05-29",
+      "description": "入管手続きにおける法定手数料の上限額引き上げ、および政令への委任",
+      "mutations": [
+        {
+          "parameter": "CHANGE_AND_RENEWAL_FEE_LIMIT",
+          "previous_value": 10000,
+          "new_value": 100000,
+          "unit": "JPY",
+          "implementation_type": "STATUTORY_MAXIMUM"
+        },
+        {
+          "parameter": "PERMANENT_RESIDENCY_FEE_LIMIT",
+          "previous_value": 10000,
+          "new_value": 300000,
+          "unit": "JPY",
+          "implementation_type": "STATUTORY_MAXIMUM"
+        }
+      ]
+    },
+    {
+      "event": "IDENTITY_CARD_INTEGRATION",
+      "date": "2026-06-14",
+      "description": "マイナンバーカードと在留カードのシステム一元化オプションのリリース",
+      "mutations": [
+        {
+          "parameter": "SPECIFIC_RESIDENCE_CARD_DEPLOYMENT",
+          "status": "ACTIVE",
+          "dependency_target": "INDIVIDUAL_NUMBER_CARD_SYSTEM",
+          "note": "任意のカード一体化運用の開始。非選択時は2枚持ち継続"
+        }
+      ]
+    },
+    {
+      "event": "FOREIGN_WORKFORCE_CAP_EXPANSION",
+      "date": "2026-03-27",
+      "description": "特定技能制度における受入上限枠の改定、および一部特定業種の新規受付停止措置",
+      "mutations": [
+        {
+          "parameter": "SPECIFIED_SKILLED_WORKER_TOTAL_CEILING",
+          "previous_value": 345150,
+          "new_value": 1230000,
+          "unit": "PERSONS",
+          "period_months": 60
+        },
+        {
+          "parameter": "FOOD_SERVICE_NEW_IN_TAKE",
+          "status": "SUSPENDED",
+          "effective_date": "2026-04-13",
+          "note": "農林水産省及び出入国在留管理庁公示に基づく、再雇用申請機能のシステム新設と新規運用の調整"
+        }
+      ]
+    },
+    {
+      "event": "NEXT_GENERATION_TRAINING_ROADMAP",
+      "date": "2026-06-01",
+      "description": "技能実習制度に代わる新制度のタイムライン仕様",
+      "mutations": [
+        {
+          "parameter": "IKUSEI_SHUROW_SYSTEM_LAID",
+          "status": "APPROVED",
+          "pre_application_start_date": "2026-09-01",
+          "enforcement_date": "2027-04-01",
+          "note": "2030年までの約3年間は、旧技能実習制度とのデータ・実務上の並存（移行期間）として処理"
+        }
+      ]
+    }
+  ],
+  "meta_analysis": {
+    "data_nature": "unbiased_registry_log",
+    "assertion_status": "VERIFIED_BY_OFFICIAL_GAZETTE"
+  }
+}
