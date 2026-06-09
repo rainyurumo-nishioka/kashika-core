@@ -1,40 +1,34 @@
 {
-  "manifest_version": "1.0.0",
-  "last_updated": "2026-06-09T22:40:00Z",
-  "federated_gates": {
+  "$schema": "https://kashika.org/schemas/registry.v1.json",
+  "network": "KASHIKA GLOBAL MATRIX",
+  "last_updated": "2026-06-10T00:00:00Z",
+  "version": "0.6.0",
+  "trusted_sectors": {
     "81": {
-      "country_name": "Japan",
-      "status": "ACTIVE",
-      "governance": {
-        "lead_organization": "ARCHI KASHIKA Project Japan",
-        "root_sbt_address": "0x81_archi_kashika_root_identity_contract"
-      },
-      "repository": {
-        "provider": "github",
-        "url": "https://github.com/kashika-core/kashika-gate-81",
-        "main_branch": "main"
-      },
-      "api_endpoints": {
-        "policy_index": "https://raw.githubusercontent.com/kashika-core/kashika-gate-81/main/index.json",
-        "raw_data_root": "https://raw.githubusercontent.com/kashika-core/kashika-gate-81/main/policies/"
-      }
+      "country": "Japan",
+      "official_domain": "https://kashika-protocol.github.io/kashika-gate-81",
+      "repository": "github.com/kashika-protocol/kashika-gate-81",
+      "public_key": "ed25519_pub_81_japan_secure_core_prod_0a8f93bc...",
+      "status": "verified"
     },
     "886": {
-      "country_name": "Taiwan",
-      "status": "ACTIVE",
-      "governance": {
-        "lead_organization": "g0v KASHIKA Taiwan Taskforce",
-        "root_sbt_address": "0x886_g0v_kashika_root_identity_contract"
-      },
-      "repository": {
-        "provider": "github",
-        "url": "https://github.com/g0v-tw/kashika-gate-886",
-        "main_branch": "main"
-      },
-      "api_endpoints": {
-        "policy_index": "https://kashika.g0v.tw/api/v1/index.json",
-        "raw_data_root": "https://kashika.g0v.tw/api/v1/policies/"
-      }
+      "country": "Taiwan",
+      "official_domain": "https://taiwan-digital-civics.github.io/kashika-gate-886",
+      "repository": "github.com/taiwan-digital-civics/kashika-gate-886",
+      "public_key": "ed25519_pub_886_taiwan_g0v_active_9f8d123e...",
+      "status": "verified"
+    },
+    "372": {
+      "country": "Estonia",
+      "official_domain": "https://estonia-core.github.io/kashika-gate-372",
+      "repository": "github.com/estonia-core/kashika-gate-372",
+      "public_key": "ed25519_pub_372_estonia_xroad_sync_4a5d6e7f...",
+      "status": "verified"
     }
+  },
+  "security_audit": {
+    "enforce_domain_match": true,
+    "block_unregistered_gate_p2p": true,
+    "note": "公式コントロールタワーは、このファイルに登録されていないドメインから送られてきたファクトの接続要請（PR）、および決済ポートのレンダリングをブラウザ側で自動的に拒絶、または警告を吐き出します。"
   }
 }
